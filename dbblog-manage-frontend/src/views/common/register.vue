@@ -4,7 +4,7 @@
       <div class="site-content">
         <div class="brand-info">
           <h2 class="brand-info__text">猿启</h2>
-          <p class="brand-info__intro">追逐互联网浪潮的小码农,个人成长博客管理网站!</p>
+          <p class="brand-info__intro">欢迎加入猿启博客,你的每一篇博文见证了你的成长的同时促进了他人的进步,分享使人快乐!</p>
         </div>
         <div class="login-main">
           <h3 class="login-title">管理员登录</h3>
@@ -27,8 +27,7 @@
               </el-row>
             </el-form-item>
             <el-form-item>
-              <el-button class="login-btn-submit" type="primary" @click="register()">注册</el-button>
-              <el-button class="login-btn-submit" type="primary" @click="dataFormSubmit()">登录</el-button>
+              <el-button class="login-btn-submit" type="primary" @click="dataFormSubmit()">注册</el-button>
             </el-form-item>
           </el-form>
         </div>
@@ -39,7 +38,6 @@
 
 <script>
 import { getUUID } from '@/utils'
-
 export default {
   data () {
     return {
@@ -96,10 +94,6 @@ export default {
     getCaptcha () {
       this.dataForm.uuid = getUUID()
       this.captchaPath = this.$http.adornUrl(`/captcha.jpg?uuid=${this.dataForm.uuid}`)
-    },
-    // 跳转到注册页面
-    register () {
-      this.$router.replace({ name: 'register' })
     }
   }
 }
