@@ -15,4 +15,8 @@
 			LEFT JOIN sys_role_menu rm on ur.role_id = rm.role_id
 		where ur.user_id = #{userId}
 	</select>
+    <!--查询最大用户自增值-->
+    <select id="queryMaxUserId" resultType="java.lang.Integer">
+         select MAX(user_id) from sys_user
+    </select>
 </mapper>

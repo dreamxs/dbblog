@@ -30,4 +30,17 @@ public interface SysUserMapper extends BaseMapper<SysUser> {
      * @return
      */
     List<Integer> queryAllMenuId(Integer userId);
+
+    /**
+     * 功能描述: <br>
+     * 〈返回最大的当前用户值〉
+     *
+     * @param null
+     * @return:
+     * @since: 1.0.0
+     * @Author:xsping
+     * @Date: 2019/11/14 22:02
+     */
+
+    int queryMaxUserId();
 }

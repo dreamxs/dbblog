@@ -15,6 +15,12 @@
             <el-form-item prop="password">
               <el-input v-model="dataForm.password" type="password" placeholder="密码"></el-input>
             </el-form-item>
+            <el-form-item prop="password2">
+              <el-input v-model="dataForm.password2" type="password" placeholder="确认密码"></el-input>
+            </el-form-item>
+            <el-form-item prop="email">
+              <el-input v-model="dataForm.email" placeholder="邮箱"></el-input>
+            </el-form-item>
             <el-form-item prop="captcha">
               <el-row :gutter="20">
                 <el-col :span="14">
@@ -44,6 +50,8 @@ export default {
       dataForm: {
         userName: '',
         password: '',
+        password2: '',
+        email: '',
         uuid: '',
         captcha: ''
       },
@@ -53,6 +61,12 @@ export default {
         ],
         password: [
           { required: true, message: '密码不能为空', trigger: 'blur' }
+        ],
+        password2: [
+          { required: true, message: '密码不能为空', trigger: 'blur' }
+        ],
+        email: [
+          { required: true, message: '邮箱格式不对', trigger: 'blur', type: 'email' }
         ],
         captcha: [
           { required: true, message: '验证码不能为空', trigger: 'blur' }
@@ -70,12 +84,14 @@ export default {
       this.$refs['dataForm'].validate((valid) => {
         if (valid) {
           this.$http({
-            url: this.$http.adornUrl('/admin/sys/login'),
+            url: this.$http.adornUrl('/admin/sys/register'),
             method: 'post',
             data: this.$http.adornData({
               'username': this.dataForm.userName,
               'password': this.dataForm.password,
+              'password2': this.dataForm.password2,
               'uuid': this.dataForm.uuid,
+              'email': this.dataForm.email,
               'captcha': this.dataForm.captcha
             })
           }).then(({data}) => {

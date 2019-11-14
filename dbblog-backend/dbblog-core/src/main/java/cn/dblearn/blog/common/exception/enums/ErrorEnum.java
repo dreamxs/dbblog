@@ -32,6 +32,11 @@ public enum ErrorEnum {
     CAPTCHA_WRONG(10002,"验证码错误"),
     USERNAME_OR_PASSWORD_WRONG(10003,"用户名或密码错误"),
 
+    //注册信息有误
+    REGISTER_USER_EXIST(10030,"用户名已存在"),
+    REGISTER_EMAIL_EXIST(10030,"邮箱已存在"),
+    REGISTER_PassWord_Error_Not_Same(10030,"密码不一致"),
+
     //七牛OSS错误
     OSS_CONFIG_ERROR(10050,"七牛配置信息错误"),
     OSS_UPLOAD_ERROR(10051,"OSSBookNote上传失败");

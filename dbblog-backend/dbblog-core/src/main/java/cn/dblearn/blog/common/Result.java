@@ -23,6 +23,11 @@ public class Result extends HashMap<String, Object> {
         return new Result();
     }
 
+    //返回自定义成功提示
+    public static Result ok(String msg) {
+        return new Result().put("msg",msg);
+    }
+
     public static Result error() {
         return error(ErrorEnum.UNKNOWN);
     }
