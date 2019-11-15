@@ -55,7 +55,7 @@ public class SysUserController extends AbstractController {
     @RequiresPermissions("sys:user:list")
     public Result list(@RequestParam Map<String, Object> params){
         //只有超级管理员，才能查看所有管理员列表
-        if(SysConstants.SUPER_ADMIN.equals(getUserId())){
+        if(!SysConstants.SUPER_ADMIN.equals(getUserId())){
             params.put("createUserId", getUserId());
         }
         PageUtils page = sysUserService.queryPage(params);

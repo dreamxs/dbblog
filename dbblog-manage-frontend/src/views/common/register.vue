@@ -34,6 +34,7 @@
             </el-form-item>
             <el-form-item>
               <el-button class="login-btn-submit" type="primary" @click="dataFormSubmit()">注册</el-button>
+              <a class="login" @click="login()">已有有账号?点此登录</a>
             </el-form-item>
           </el-form>
         </div>
@@ -44,6 +45,7 @@
 
 <script>
 import { getUUID } from '@/utils'
+
 export default {
   data () {
     return {
@@ -96,8 +98,12 @@ export default {
             })
           }).then(({data}) => {
             if (data && data.code === 200) {
-              this.$cookie.set('token', data.token)
-              this.$router.replace({ name: 'home' })
+              this.$alert(data.msg + '即将跳转到登录页面', '注册成功', {
+                confirmButtonText: '确定',
+                callback: action => {
+                  this.$router.replace({ name: 'login' })
+                }
+              })
             } else {
               this.getCaptcha()
               this.$message.error(data.msg)
@@ -110,6 +116,10 @@ export default {
     getCaptcha () {
       this.dataForm.uuid = getUUID()
       this.captchaPath = this.$http.adornUrl(`/captcha.jpg?uuid=${this.dataForm.uuid}`)
+    },
+    // 跳转到注册页面
+    login () {
+      this.$router.replace({ name: 'login' })
     }
   }
 }
@@ -188,6 +198,13 @@ export default {
     .login-btn-submit {
       width: 100%;
       margin-top: 38px;
+    }
+    .login {
+      display: block;
+      width: 50%;
+      text-align: center;
+      margin: 0 auto;
+      cursor: pointer;
     }
   }
 </style>

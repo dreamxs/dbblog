@@ -14,6 +14,7 @@
       </el-form-item>
       <el-form-item label="上级菜单" prop="parentName">
         <el-popover
+          v-model="menupoppervisible"
           ref="menuListPopover"
           placement="bottom-start"
           trigger="click">
@@ -22,6 +23,7 @@
             :props="menuListTreeProps"
             node-key="menuId"
             ref="menuListTree"
+            @node-click="menuListTreeNode"
             @current-change="menuListTreeCurrentChangeHandle"
             :default-expand-all="true"
             :highlight-current="true"
@@ -89,6 +91,7 @@ export default {
     }
     return {
       visible: false,
+      menupoppervisible: false,
       dataForm: {
         id: 0,
         type: 1,
@@ -165,11 +168,17 @@ export default {
     menuListTreeCurrentChangeHandle (data, node) {
       this.dataForm.parentId = data.menuId
       this.dataForm.parentName = data.name
+      this.menupoppervisible = false
     },
     // 菜单树设置当前选中节点
     menuListTreeSetCurrentNode () {
       this.$refs.menuListTree.setCurrentKey(this.dataForm.parentId)
       this.dataForm.parentName = (this.$refs.menuListTree.getCurrentNode() || {})['name']
+      this.$refs.menupoppervisible = false
+    },
+    // 树节点被选中
+    menuListTreeNode (data, node) {
+      this.menupoppervisible = false
     },
     // 图标选中
     iconActiveHandle (iconName) {

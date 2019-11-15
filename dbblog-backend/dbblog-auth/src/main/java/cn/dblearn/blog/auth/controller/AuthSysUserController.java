@@ -113,13 +113,12 @@ public class AuthSysUserController extends AbstractController {
         }
         SysUser registeruser = new SysUser();
         registeruser.setCreateTime(new Date());
-        registeruser.setCreateUserId(2);
-        registeruser.setCreateUserId(sysUserMapper.queryMaxUserId());
+        registeruser.setCreateUserId(sysUserMapper.queryMaxUserId() + 1);
         registeruser.setEmail(form.getEmail());
         registeruser.setStatus(1);
         registeruser.setSalt(UUID.randomUUID().toString());
         registeruser.setUsername(form.getUsername());
-        registeruser.setPassword(new Sha256Hash(form.getPassword(),registeruser.getSalt()).toHex());
+        registeruser.setPassword(new Sha256Hash(form.getPassword(), registeruser.getSalt()).toHex());
         sysUserMapper.insert(registeruser);
         return Result.ok("注册成功(oﾟ▽ﾟ)o♡");
 

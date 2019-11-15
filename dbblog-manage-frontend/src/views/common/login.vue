@@ -27,8 +27,8 @@
               </el-row>
             </el-form-item>
             <el-form-item>
-              <el-button class="login-btn-submit" type="primary" @click="register()">注册</el-button>
               <el-button class="login-btn-submit" type="primary" @click="dataFormSubmit()">登录</el-button>
+              <a class="register" @click="register()">还没有账号?点此注册</a>
             </el-form-item>
           </el-form>
         </div>
@@ -178,6 +178,13 @@ export default {
     .login-btn-submit {
       width: 100%;
       margin-top: 38px;
+    }
+    .register {
+      display: block;
+      width: 50%;
+      text-align: center;
+      margin: 0 auto;
+      cursor: pointer;
     }
   }
 </style>
