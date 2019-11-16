@@ -65,6 +65,9 @@ export default {
   },
   created () {
     this.getCaptcha()
+    if (this.$cookie.token) {
+      this.$router.replace({ name: 'home' })
+    }
   },
   methods: {
     // 提交表单
