@@ -48,6 +48,7 @@
               ref="iconListPopover"
               placement="bottom-start"
               trigger="click"
+              v-model="iconvisible"
               popper-class="mod-menu__icon-popover">
               <div class="mod-menu__icon-list">
                 <el-button
@@ -92,6 +93,7 @@ export default {
     return {
       visible: false,
       menupoppervisible: false,
+      iconvisible: false,
       dataForm: {
         id: 0,
         type: 1,
@@ -183,6 +185,7 @@ export default {
     // 图标选中
     iconActiveHandle (iconName) {
       this.dataForm.icon = iconName
+      this.iconvisible = false
     },
     // 表单提交
     dataFormSubmit () {
