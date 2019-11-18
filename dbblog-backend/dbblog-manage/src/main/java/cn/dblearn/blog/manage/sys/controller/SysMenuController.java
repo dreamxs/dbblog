@@ -1,4 +1,5 @@
 package cn.dblearn.blog.manage.sys.controller;
+import	java.lang.reflect.Parameter;
 
 
 import cn.dblearn.blog.auth.service.ShiroService;
@@ -6,6 +7,7 @@ import cn.dblearn.blog.common.Result;
 import cn.dblearn.blog.common.base.AbstractController;
 import cn.dblearn.blog.common.enums.MenuTypeEnum;
 import cn.dblearn.blog.common.exception.MyException;
+import cn.dblearn.blog.common.util.HttpContextUtils;
 import cn.dblearn.blog.entity.sys.SysMenu;
 import cn.dblearn.blog.manage.sys.service.SysMenuService;
 import org.apache.commons.lang.StringUtils;
@@ -14,6 +16,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 /**
@@ -49,6 +52,25 @@ public class SysMenuController extends AbstractController {
     @RequiresPermissions("sys:menu:list")
     public List<SysMenu> list(){
         List<SysMenu> menuList = sysMenuService.list(null);
+        menuList.forEach(sysMenu -> {
+            SysMenu parentMenu = sysMenuService.getById(sysMenu.getParentId());
+            if(parentMenu != null){
+                sysMenu.setParentName(parentMenu.getName());
+            }
+        });
+        return menuList;
+    }
+
+    /**
+     * 所有菜单列表
+     */
+    @GetMapping("/listbyid")
+    @RequiresPermissions("sys:menu:list")
+    public List<SysMenu> listByParentid(@RequestParam Map<String, Object> params){
+
+        Integer parentid =Integer.valueOf(String.valueOf(HttpContextUtils.getStrRequest(params,"parentid","0")));
+        List<SysMenu> menuList = sysMenuService.queryListParentId(parentid);
+
         menuList.forEach(sysMenu -> {
             SysMenu parentMenu = sysMenuService.getById(sysMenu.getParentId());
             if(parentMenu != null){
