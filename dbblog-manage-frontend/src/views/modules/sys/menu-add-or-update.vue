@@ -166,6 +166,23 @@ export default {
         }
       })
     },
+    add (id) {
+      this.dataForm.parentId = id
+      this.$http({
+        url: this.$http.adornUrl('/admin/sys/menu/select'),
+        method: 'get',
+        params: this.$http.adornParams()
+      }).then(({data}) => {
+        this.menuList = treeDataTranslate(data.menuList, 'menuId')
+      }).then(() => {
+        this.visible = true
+        this.$nextTick(() => {
+          this.$refs['dataForm'].resetFields()
+        })
+      }).then(() => {
+        this.menuListTreeSetCurrentNode()
+      })
+    },
     // 菜单树选中
     menuListTreeCurrentChangeHandle (data, node) {
       this.dataForm.parentId = data.menuId

@@ -29,4 +29,6 @@ public interface SysMenuMapper extends BaseMapper<SysMenu> {
      * @return
      */
     List<SysMenu> queryListParentId(Integer parentId);
+
+    int queryMaxMenuId();
 }

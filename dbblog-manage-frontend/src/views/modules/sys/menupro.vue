@@ -1,7 +1,7 @@
 <template>
   <div class="mod-config">
     <el-row>
-      <el-col :span="7">
+      <el-col :span="4">
         <el-card>
           <div slot="header">
             <span>菜单列表</span>
@@ -20,7 +20,7 @@
           </div>
         </el-card>
       </el-col>
-      <el-col :span="17">
+      <el-col :span="20">
         <el-card>
           <div slot="header">
             <span>菜单列表</span>
@@ -28,7 +28,7 @@
           <div>
             <el-form :inline="true" :model="dataForm">
               <el-form-item>
-                <el-button v-if="isAuth('sys:menu:save')" type="primary" @click="addOrUpdateHandle()">新增</el-button>
+                <el-button v-if="isAuth('sys:menu:save')" type="primary" @click="addHandle(menuParentId)">新增</el-button>
               </el-form-item>
             </el-form>
             <el-table
@@ -42,6 +42,13 @@
                 width="80"
                 label="ID">
               </el-table-column>
+              <el-table-column
+                prop="parentName"
+                header-align="center"
+                align="center"
+                width="120"
+                label="上级菜单">
+              </el-table-column>
               <table-tree-column
                 prop="name"
                 header-align="center"
@@ -50,14 +57,8 @@
                 label="名称">
               </table-tree-column>
               <el-table-column
-                prop="parentName"
                 header-align="center"
-                align="center"
-                width="120"
-                label="上级菜单">
-              </el-table-column>
-              <el-table-column
-                header-align="center"
+                width="60"
                 align="center"
                 label="图标">
                 <template slot-scope="scope">
@@ -66,6 +67,7 @@
               </el-table-column>
               <el-table-column
                 prop="type"
+                width="80"
                 header-align="center"
                 align="center"
                 label="类型">
@@ -77,6 +79,7 @@
               </el-table-column>
               <el-table-column
                 prop="orderNum"
+                width="80"
                 header-align="center"
                 align="center"
                 label="排序号">
@@ -85,7 +88,6 @@
                 prop="url"
                 header-align="center"
                 align="center"
-                width="150"
                 :show-overflow-tooltip="true"
                 label="菜单URL">
               </el-table-column>
@@ -93,7 +95,6 @@
                 prop="perms"
                 header-align="center"
                 align="center"
-                width="150"
                 :show-overflow-tooltip="true"
                 label="授权标识">
               </el-table-column>
@@ -114,7 +115,7 @@
       </el-col>
       </el-row>
     <!-- 弹窗, 新增 / 修改 -->
-    <add-or-update v-if="addOrUpdateVisible" ref="addOrUpdate" @refreshDataList="getDataList"></add-or-update>
+    <add-or-update v-if="addOrUpdateVisible" ref="addOrUpdate" @refreshDataList="refreshData"></add-or-update>
   </div>
 </template>
 
@@ -146,6 +147,10 @@ export default {
     this.initMenu()
   },
   methods: {
+    refreshData () {
+      this.getDataList()
+      this.initMenu()
+    },
     // 获取数据列表
     getDataList () {
       this.dataListLoading = true
@@ -170,6 +175,13 @@ export default {
         this.$refs.addOrUpdate.init(id)
       })
     },
+    // 新增
+    addHandle (id) {
+      this.addOrUpdateVisible = true
+      this.$nextTick(() => {
+        this.$refs.addOrUpdate.add(id)
+      })
+    },
     // 删除
     deleteHandle (id) {
       this.$confirm(`确定对[id=${id}]进行[删除]操作?`, '提示', {
@@ -188,7 +200,7 @@ export default {
               type: 'success',
               duration: 1500,
               onClose: () => {
-                this.getDataList()
+                this.refreshData()
               }
             })
           } else {
@@ -211,7 +223,7 @@ export default {
     menuListTreeCurrentChangeHandle (data, node) {
       this.menuParentId = data.menuId
       console.log(this.menuParentId)
-      this.getDataList()
+      this.refreshData()
     }
   }
 }

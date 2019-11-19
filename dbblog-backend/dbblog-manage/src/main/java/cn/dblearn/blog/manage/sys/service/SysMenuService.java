@@ -48,4 +48,9 @@ public interface SysMenuService extends IService<SysMenu> {
      * 删除
      */
     void delete(Integer menuId);
+
+    /**
+     * 最大列id
+     */
+    int queryMaxMenuId();
 }

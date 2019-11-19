@@ -8,4 +8,9 @@
     <select id="queryNotButtonList" resultType="cn.dblearn.blog.entity.sys.SysMenu">
 		select * from sys_menu where type != 2 order by order_num asc
 	</select>
+
+	<!--查询最大用户自增值-->
+	<select id="queryMaxMenuId" resultType="java.lang.Integer">
+         SELECT MAX(menu_id) FROM sys_menu
+    </select>
 </mapper>
