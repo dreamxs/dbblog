@@ -93,19 +93,27 @@ public class CategoryController extends AbstractController {
     @CacheEvict(allEntries = true)
     public Result save(@RequestBody Category category){
         // 数据校验
+
+        if ("-1".equals(category.getParentId().toString())){
+            category.setLevel("-1");
+        }else {
+            Category parentCategory = categoryService.getById(category.getParentId());
+            category.setLevel(parentCategory.getLevel()+','+category.getParentId());
+        }
+        category.setRank(category.getLevel().split(",").length-1);
         ValidatorUtils.validateEntity(category);
         verifyCategory(category);
         categoryService.save(category);
-
         return Result.ok();
     }
+
 
     /**
      * 数据校验
      * @param category
      */
     private void verifyCategory(Category category) {
-        //上级分类级别
+       /* //上级分类级别
         int parentRank = CategoryRankEnum.ROOT.getValue();
         if (category.getParentId() != CategoryRankEnum.FIRST.getValue()
                 && category.getParentId() != CategoryRankEnum.ROOT.getValue()) {
@@ -132,7 +140,7 @@ public class CategoryController extends AbstractController {
             if (parentRank != CategoryRankEnum.SECOND.getValue()) {
                 throw new MyException("上级目录只能为二级类型");
             }
-        }
+        }*/
     }
 
     /**

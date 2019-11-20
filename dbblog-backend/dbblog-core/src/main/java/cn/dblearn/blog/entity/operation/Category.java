@@ -34,17 +34,19 @@ public class Category implements Serializable {
     private String name;
 
     @ApiModelProperty(value = "类型")
-    @NotNull(message = "类型不能为空")
     private Integer type;
 
-    @ApiModelProperty(value = "级别")
-    @NotNull(message = "级别不能为空")
+    @ApiModelProperty(value = "排序")
     @TableField(value = "`rank`")
     private Integer rank;
 
     @ApiModelProperty(value = "父主键")
     @NotNull(message = "父主键不能为空")
     private Integer parentId;
+
+    @ApiModelProperty(value = "level级别" )
+    @NotNull(message = "level级别不能为空" )
+    private String level;
 
     @TableField(exist = false)
     private String parentName;

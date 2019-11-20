@@ -2,19 +2,11 @@
   <div class="mod-config">
     <el-form :inline="true" :model="dataForm" @keyup.enter.native="getDataList()">
       <el-form-item>
-        <el-select v-model="dataForm.type" clearable>
-          <el-option v-for="type in typeList"
-          :key="type.parKey"
-          :value="type.parKey"
-          :label="type.parValue"></el-option>
-        </el-select>
-      </el-form-item>
-      <el-form-item>
         <el-input v-model="dataForm.name" placeholder="名称" clearable></el-input>
       </el-form-item>
       <el-form-item>
         <el-button @click="getDataList()">查询</el-button>
-        <el-button v-if="isAuth('operation:category:save')" type="primary" @click="addOrUpdateHandle()">新增</el-button>
+        <el-button v-if="isAuth('operation:category:save')" type="primary" @click="addOrUpdateHandle(-1)">新增</el-button>
       </el-form-item>
     </el-form>
     <el-table
@@ -22,30 +14,18 @@
       border
       v-loading="dataListLoading"
       style="width: 100%;">
+      <el-table-column
+        prop="id"
+        header-align="center"
+        width="120"
+        label="标识">
+      </el-table-column>
       <table-tree-column
         prop="name"
         header-align="center"
         width="150"
         label="名称">
       </table-tree-column>
-      <el-table-column
-        prop="type"
-        header-align="center"
-        align="center"
-        label="类型">
-        <template slot-scope="scope">
-          {{getSysParam('MODULE_TYPE',scope.row.type,typeList)}}
-        </template>
-      </el-table-column>
-      <el-table-column
-        prop="rank"
-        header-align="center"
-        align="center"
-        label="级别">
-        <template slot-scope="scope">
-          {{getSysParam('CATEGORY_RANK', scope.row.rank)}}
-        </template>
-      </el-table-column>
       <el-table-column
         prop="parentName"
         header-align="center"

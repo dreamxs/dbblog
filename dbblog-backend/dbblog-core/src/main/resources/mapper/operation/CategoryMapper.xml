@@ -8,11 +8,12 @@
         <result column="type" property="type" />
         <result column="rank" property="rank" />
         <result column="parent_id" property="parentId" />
+        <result column="level" property="level" />
     </resultMap>
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
-        id, name, type, rank, parent_id
+        id, name, type, rank, parent_id, level
     </sql>
 
     <select id="queryAll" parameterType="Map" resultType="cn.dblearn.blog.entity.operation.Category">
@@ -20,9 +21,6 @@
         <where>
             <if test="name != null and name != ''">
                 t.name like concat('%',#{name},'%')
-            </if>
-            <if test="type !=null and type !=''">
-                t.type = #{type}
             </if>
         </where>
     </select>

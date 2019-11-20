@@ -187,13 +187,11 @@ export default {
     menuListTreeCurrentChangeHandle (data, node) {
       this.dataForm.parentId = data.menuId
       this.dataForm.parentName = data.name
-      this.menupoppervisible = false
     },
     // 菜单树设置当前选中节点
     menuListTreeSetCurrentNode () {
       this.$refs.menuListTree.setCurrentKey(this.dataForm.parentId)
       this.dataForm.parentName = (this.$refs.menuListTree.getCurrentNode() || {})['name']
-      this.$refs.menupoppervisible = false
     },
     // 树节点被选中
     menuListTreeNode (data, node) {

@@ -4,35 +4,21 @@
     :close-on-click-modal="false"
     :visible.sync="visible">
     <el-form :model="dataForm" :rules="dataRule" ref="dataForm" @keyup.enter.native="dataFormSubmit()" label-width="120px">
-      <el-form-item label="菜单级别" prop="rank">
-        <el-radio-group v-model="dataForm.rank">
-          <el-radio v-for="rank in rankList" :label="rank.parKey" :key="rank.parKey">{{ rank.parValue }}</el-radio>
-        </el-radio-group>
-      </el-form-item>
-      <el-form-item :label="getSysParam('CATEGORY_RANK',dataForm.rank,rankList)+'名称'" prop="name">
-        <el-input v-model="dataForm.name" placeholder="名称"></el-input>
-      </el-form-item>
-      <el-form-item label="所属分类" prop="type">
-        <el-select placeholder="请选择所属分类" clearable filterable v-model="dataForm.type" @change="getCategorySelect()">
-          <el-option
-            v-for="type in typeList"
-            :key="type.parKey"
-            :label="type.parValue"
-            :value="type.parKey">
-          </el-option>
-        </el-select>
+      <el-form-item label="菜单名称" prop="name">
+        <el-input v-model="dataForm.name" placeholder="菜单名称"></el-input>
       </el-form-item>
       <el-form-item label="上级目录" prop="parentId">
         <el-popover
           ref="categoryListPopover"
           placement="bottom-start"
+          v-model="popoverVisible"
           trigger="click">
           <el-tree
             :data="categoryList"
             :props="categoryListTreeProps"
             node-key="id"
             ref="categoryListTree"
-            @current-change="categoryListTreeCurrentChangeHandle"
+            @node-click="categoryListTreeCurrentChangeHandle"
             :default-expand-all="true"
             :highlight-current="true"
             :expand-on-click-node="false">
@@ -54,6 +40,7 @@ export default {
   data () {
     return {
       visible: false,
+      popoverVisible: false,
       dataForm: {
         rank: 0,
         type: '',
@@ -64,22 +51,10 @@ export default {
         name: [
           { required: true, message: '名称不能为空', trigger: 'blur' }
         ],
-        type: [
-          { required: true, message: '类型不能为空', trigger: 'blur' }
-        ],
-        rank: [
-          { required: true, message: '级别不能为空', trigger: 'blur' }
-        ],
         parentId: [
           { required: true, message: '父主键不能为空', trigger: 'blur' }
         ]
       },
-      rankList: this.getSysParamArr('CATEGORY_RANK'),
-      typeList: this.getSysParamArr('MODULE_TYPE').filter(type => {
-        if (type.parKey !== 2) {
-          return type
-        }
-      }),
       categoryList: [],
       categoryListTreeProps: {
         label: 'name',
@@ -89,11 +64,13 @@ export default {
   },
   methods: {
     init (id) {
-      this.dataForm.id = id || ''
+      console.log(id)
+      this.dataForm.id = (id === -1 || !id) ? '' : id
       this.visible = true
       this.$nextTick(() => {
         this.$refs['dataForm'].resetFields()
       })
+      this.getCategorySelect()
       if (this.dataForm.id) {
         this.$http({
           url: this.$http.adornUrl(`/admin/operation/category/info/${this.dataForm.id}`),
@@ -103,25 +80,13 @@ export default {
           if (data && data.code === 200) {
             this.dataForm = data.category
           }
-        }).then(() => {
-          this.$http({
-            url: this.$http.adornUrl('/admin/operation/category/select'),
-            method: 'get',
-            params: this.$http.adornParams({type: this.dataForm.type})
-          }).then(({data}) => {
-            if (data && data.code === 200) {
-              this.categoryList = treeDataTranslate(data.categoryList)
-              this.categoryListTreeSetCurrentNode()
-            } else {
-              this.categoryList = []
-            }
-          })
+          this.categoryListTreeSetCurrentNode()
         })
       } else {
         this.dataForm = {
           rank: 0,
           type: '',
-          parentId: 0,
+          parentId: -1,
           parentName: ''
         }
       }
@@ -166,6 +131,9 @@ export default {
         }
       })
     },
+    categoryListTreeNode (data, node) {
+      this.popoverVisible = false
+    },
     // 分类列表树选中
     categoryListTreeCurrentChangeHandle (data, node) {
       this.dataForm.parentId = data.id
@@ -173,6 +141,7 @@ export default {
     },
     // 分类列表树设置当前选中节点
     categoryListTreeSetCurrentNode () {
+      this.popoverVisible = false
       this.$refs.categoryListTree.setCurrentKey(this.dataForm.parentId)
       this.dataForm.parentName = (this.$refs.categoryListTree.getCurrentNode() || {})['name']
     }
