@@ -59,7 +59,7 @@ public class CodeGeneratorUtils {
         GlobalConfig gc = new GlobalConfig();
         String projectPath = System.getProperty("user.dir");
         gc.setOutputDir(projectPath + "/src/main/java");
-        gc.setAuthor("bobbi");;
+        gc.setAuthor("xsping");;
         gc.setBaseResultMap(true);
         gc.setBaseColumnList(true);
         gc.setOpen(false);
@@ -70,10 +70,10 @@ public class CodeGeneratorUtils {
 
         // 数据源配置
         DataSourceConfig dsc = new DataSourceConfig();
-        dsc.setUrl("jdbc:mysql://localhost:3306/dbblog?allowMultiQueries=true&useUnicode=true&characterEncoding=UTF-8&useSSL=false");
-        dsc.setDriverName("com.mysql.jdbc.Driver");
+        dsc.setUrl("jdbc:mysql://localhost:3307/dbblog?allowMultiQueries=true&useUnicode=true&characterEncoding=UTF-8&useSSL=false&serverTimezone=GMT");
+        dsc.setDriverName("com.mysql.cj.jdbc.Driver");
         dsc.setUsername("root");
-        dsc.setPassword("123456");
+        dsc.setPassword("xsping");
         mpg.setDataSource(dsc);
 
         // 包配置
