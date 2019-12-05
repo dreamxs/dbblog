@@ -16,6 +16,9 @@ import org.springframework.web.servlet.NoHandlerFoundException;
  * @date 2018/10/07 14:33
  * @email 571002217@qq.com
  * @description 统一异常处理器
+ *
+ * RestControllerAdvice源码可以知道，它就是@ControllerAdvice和@ResponseBody的合并。此注解通过对异常的拦截实现的统一异常返回处理
+ * RestControllerAdvice（如果全部异常处理返回json，那么可以使用 @RestControllerAdvice 代替 @ControllerAdvice ，这样在方法上就可以不需要添加 @ResponseBody。）
  */
 @RestControllerAdvice
 @Slf4j

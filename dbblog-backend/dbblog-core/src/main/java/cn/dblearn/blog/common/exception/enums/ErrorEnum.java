@@ -37,6 +37,10 @@ public enum ErrorEnum {
     REGISTER_EMAIL_EXIST(10030,"邮箱已存在"),
     REGISTER_PassWord_Error_Not_Same(10030,"密码不一致"),
 
+    //权限异常
+    Authority_NO_Authority(10040,"您无权限操作"),
+    Authority_NO_Login(10041,"当前模块需要登录否访问"),
+
     //七牛OSS错误
     OSS_CONFIG_ERROR(10050,"七牛配置信息错误"),
     OSS_UPLOAD_ERROR(10051,"OSSBookNote上传失败");

@@ -52,7 +52,9 @@ public class ShiroServiceImpl implements ShiroService {
 
          //系统管理员，拥有最高权限
         if(SysConstants.SUPER_ADMIN.equals(userId)){
+            //获取是所有菜单
             List<SysMenu> menuList=sysMenuMapper.selectList(null);
+            //菜单按钮权限列表 新增,删除,更新,list查看等
             permsList=new ArrayList<>(menuList.size());
             menuList.forEach(menu ->  permsList.add(menu.getPerms()));
         }else {
