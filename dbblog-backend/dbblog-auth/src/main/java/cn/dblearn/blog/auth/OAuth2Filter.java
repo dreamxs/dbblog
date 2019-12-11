@@ -19,7 +19,7 @@ import javax.servlet.http.HttpServletResponse;
 
 /**
  * OAuth2Filter
- *
+ * 权限过滤器 AuthenticatingFilter
  * @author bobbi
  * @date 2018/10/07 16:39
  * @email 571002217@qq.com
@@ -27,6 +27,11 @@ import javax.servlet.http.HttpServletResponse;
  */
 public class OAuth2Filter extends AuthenticatingFilter {
 
+
+    /**
+     * 获得请求中的token
+     *
+     * */
     @Override
     protected AuthenticationToken createToken(ServletRequest request, ServletResponse response) throws Exception {
         //获取请求token
@@ -35,19 +40,30 @@ public class OAuth2Filter extends AuthenticatingFilter {
         if(StringUtils.isEmpty(token)){
             return null;
         }
-
         return new OAuth2Token(token);
     }
 
+    /**
+     *
+     *该方法是用来判断用户是否已登录，若未登录再判断是否请求的是登录地址，是登录地址则放行，否则返回false终止filter链
+     * */
     @Override
     protected boolean isAccessAllowed(ServletRequest request, ServletResponse response, Object mappedValue) {
+
+        //同时添加请求方法判断 非法请求过滤掉
         if(((HttpServletRequest) request).getMethod().equals(RequestMethod.OPTIONS.name())){
             return true;
         }
-
         return false;
     }
 
+    /**
+     * isAccessAllowed判断了用户未登录，则会调用onAccessDenied方法做用户登录操作。
+     * 若用户请求的不是登录地址，则跳转到登录地址，并且返回false直接终止filter链。若用户请求的是登录地址，
+     * 若果是post请求则进行登录操作，由AuthenticatingFilter中提供的executeLogin方法执行。
+     * 否则直接通过继续执行filter链，并最终跳转到登录页面（因为用户请求的就是登录地址，
+     * 若不是登录地址也会重定向到登录地址）.
+     * */
     @Override
     protected boolean onAccessDenied(ServletRequest request, ServletResponse response) throws Exception {
         //获取请求token，如果token不存在，直接返回401
@@ -65,6 +81,10 @@ public class OAuth2Filter extends AuthenticatingFilter {
         return executeLogin(request, response);
     }
 
+
+    /**
+     * 登录失败执行
+     * **/
     @Override
     protected boolean onLoginFailure(AuthenticationToken token, AuthenticationException e, ServletRequest request, ServletResponse response) {
         HttpServletResponse httpResponse = (HttpServletResponse) response;

@@ -3,9 +3,11 @@ package cn.dblearn.blog.manage.book.controller;
 import cn.dblearn.blog.common.Result;
 import cn.dblearn.blog.common.base.AbstractController;
 import cn.dblearn.blog.common.constants.RedisCacheNames;
+import cn.dblearn.blog.common.constants.SysConstants;
 import cn.dblearn.blog.common.validator.ValidatorUtils;
 import cn.dblearn.blog.entity.book.BookSense;
 import cn.dblearn.blog.manage.book.service.BookSenseService;
+import org.apache.shiro.authz.annotation.Logical;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.cache.annotation.CacheConfig;
 import org.springframework.cache.annotation.CacheEvict;
@@ -31,7 +33,7 @@ public class BookSenseController extends AbstractController {
     private BookSenseService bookSenseService;
 
     @GetMapping("/{bookId}")
-    @RequiresPermissions("book:info")
+    @RequiresPermissions(logical = Logical.OR, value = {SysConstants.SUPER_REQUIRESPERMISSIONS,"book:info"})
     public Result getReadSense(@PathVariable Integer bookId) {
         BookSense bookSense = bookSenseService.getBookSense(bookId);
         return Result.ok().put("bookSense",bookSense);
@@ -40,7 +42,7 @@ public class BookSenseController extends AbstractController {
      * 保存
      */
     @PostMapping("/save")
-    @RequiresPermissions("book:save")
+    @RequiresPermissions(logical = Logical.OR, value = {SysConstants.SUPER_REQUIRESPERMISSIONS,"book:save"})
     @CacheEvict(allEntries = true)
     public Result save(@RequestBody BookSense bookSense) {
         ValidatorUtils.validateEntity(bookSense);
@@ -53,7 +55,7 @@ public class BookSenseController extends AbstractController {
      * 修改
      */
     @PutMapping("/update")
-    @RequiresPermissions("book:update")
+    @RequiresPermissions(logical = Logical.OR, value = {SysConstants.SUPER_REQUIRESPERMISSIONS,"book:update"})
     @CacheEvict(allEntries = true)
     public Result update(@RequestBody BookSense bookSense) {
         ValidatorUtils.validateEntity(bookSense);

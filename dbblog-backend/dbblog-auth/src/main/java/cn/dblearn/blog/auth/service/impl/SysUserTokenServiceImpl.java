@@ -51,7 +51,7 @@ public class SysUserTokenServiceImpl implements SysUserTokenService {
         redisUtils.set(tokenKey,userId,EXPIRE);
         redisUtils.set(userIdKey,token,EXPIRE);
 
-        return new Result().put("token",token).put("expire",EXPIRE);
+        return new Result().put("token",token).put("expire",EXPIRE).put("userId",userId);
     }
 
     /**

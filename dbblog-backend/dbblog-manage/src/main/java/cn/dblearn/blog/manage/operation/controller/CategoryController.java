@@ -3,6 +3,7 @@ package cn.dblearn.blog.manage.operation.controller;
 import cn.dblearn.blog.common.Result;
 import cn.dblearn.blog.common.base.AbstractController;
 import cn.dblearn.blog.common.constants.RedisCacheNames;
+import cn.dblearn.blog.common.constants.SysConstants;
 import cn.dblearn.blog.common.enums.CategoryRankEnum;
 import cn.dblearn.blog.common.exception.MyException;
 import cn.dblearn.blog.common.validator.ValidatorUtils;
@@ -12,6 +13,7 @@ import cn.dblearn.blog.manage.book.service.BookNoteService;
 import cn.dblearn.blog.manage.book.service.BookService;
 import cn.dblearn.blog.manage.operation.service.CategoryService;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import org.apache.shiro.authz.annotation.Logical;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.cache.annotation.CacheConfig;
 import org.springframework.cache.annotation.CacheEvict;
@@ -50,7 +52,7 @@ public class CategoryController extends AbstractController {
      * 列表
      */
     @RequestMapping("/list")
-    @RequiresPermissions("operation:category:list")
+    @RequiresPermissions(logical = Logical.OR, value = {SysConstants.SUPER_REQUIRESPERMISSIONS,"operation:category:list"})
     public Result list(@RequestParam Map<String, Object> params){
         List<Category> categoryList = categoryService.queryWithParentName(params);
         return Result.ok().put("categoryList",categoryList);
@@ -60,7 +62,7 @@ public class CategoryController extends AbstractController {
      * 树状列表
      */
     @RequestMapping("/select")
-    @RequiresPermissions("operation:category:list")
+    @RequiresPermissions(logical = Logical.OR, value = {SysConstants.SUPER_REQUIRESPERMISSIONS,"operation:category:list"})
     public Result select(Integer type){
         List<Category> categoryList = categoryService.list(new QueryWrapper<Category>().lambda().eq(type!=null,Category::getType,type));
 
@@ -78,7 +80,7 @@ public class CategoryController extends AbstractController {
      * 信息
      */
     @RequestMapping("/info/{id}")
-    @RequiresPermissions("operation:category:info")
+    @RequiresPermissions(logical = Logical.OR, value = {SysConstants.SUPER_REQUIRESPERMISSIONS,"operation:category:info"})
     public Result info(@PathVariable("id") Integer id){
         Category category = categoryService.getById(id);
 
@@ -89,7 +91,7 @@ public class CategoryController extends AbstractController {
      * 保存
      */
     @RequestMapping("/save")
-    @RequiresPermissions("operation:category:save")
+    @RequiresPermissions(logical = Logical.OR, value = {SysConstants.SUPER_REQUIRESPERMISSIONS,"operation:category:save"})
     @CacheEvict(allEntries = true)
     public Result save(@RequestBody Category category){
         // 数据校验
@@ -147,7 +149,7 @@ public class CategoryController extends AbstractController {
      * 修改
      */
     @RequestMapping("/update")
-    @RequiresPermissions("operation:category:update")
+    @RequiresPermissions(logical = Logical.OR, value = {SysConstants.SUPER_REQUIRESPERMISSIONS,"operation:category:update"})
     @CacheEvict(allEntries = true)
     public Result update(@RequestBody Category category){
         categoryService.updateById(category);
@@ -159,7 +161,7 @@ public class CategoryController extends AbstractController {
      * 删除
      */
     @DeleteMapping("/delete/{id}")
-    @RequiresPermissions("operation:category:delete")
+    @RequiresPermissions(logical = Logical.OR, value = {SysConstants.SUPER_REQUIRESPERMISSIONS,"operation:category:delete"})
     @CacheEvict(allEntries = true)
     public Result delete(@PathVariable Integer id){
 

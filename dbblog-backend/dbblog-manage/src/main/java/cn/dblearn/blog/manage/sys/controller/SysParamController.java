@@ -2,11 +2,13 @@ package cn.dblearn.blog.manage.sys.controller;
 
 import cn.dblearn.blog.common.Result;
 import cn.dblearn.blog.common.base.AbstractController;
+import cn.dblearn.blog.common.constants.SysConstants;
 import cn.dblearn.blog.common.util.PageUtils;
 import cn.dblearn.blog.common.validator.ValidatorUtils;
 import cn.dblearn.blog.entity.sys.SysParam;
 import cn.dblearn.blog.manage.sys.service.SysParamService;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.shiro.authz.annotation.Logical;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -34,7 +36,7 @@ public class SysParamController extends AbstractController {
      * 列表
      */
     @GetMapping("/list")
-    @RequiresPermissions("sys:param:list")
+    @RequiresPermissions(logical = Logical.OR, value = {SysConstants.SUPER_REQUIRESPERMISSIONS,"sys:param:list"})
     public Result list(@RequestParam Map<String, Object> params){
         PageUtils page = paramService.queryPage(params);
 
@@ -55,7 +57,7 @@ public class SysParamController extends AbstractController {
      * 信息
      */
     @GetMapping("/info/{id}")
-    @RequiresPermissions("sys:param:info")
+    @RequiresPermissions(logical = Logical.OR, value = {SysConstants.SUPER_REQUIRESPERMISSIONS,"sys:param:info"})
     public Result info(@PathVariable("id") String id){
        SysParam param = paramService.getById(id);
 
@@ -66,7 +68,7 @@ public class SysParamController extends AbstractController {
      * 保存
      */
     @PostMapping("/save")
-    @RequiresPermissions("sys:param:save")
+    @RequiresPermissions(logical = Logical.OR, value = {SysConstants.SUPER_REQUIRESPERMISSIONS,"sys:param:save"})
     public Result save(@RequestBody SysParam param){
         ValidatorUtils.validateEntity(param);
         paramService.save(param);
@@ -78,7 +80,7 @@ public class SysParamController extends AbstractController {
      * 修改
      */
     @PutMapping("/update")
-    @RequiresPermissions("sys:param:update")
+    @RequiresPermissions(logical = Logical.OR, value = {SysConstants.SUPER_REQUIRESPERMISSIONS,"sys:param:update"})
     public Result update(@RequestBody SysParam param){
         ValidatorUtils.validateEntity(param);
         paramService.updateById(param);
@@ -89,7 +91,7 @@ public class SysParamController extends AbstractController {
      * 删除
      */
     @DeleteMapping("/delete")
-    @RequiresPermissions("sys:param:delete")
+    @RequiresPermissions(logical = Logical.OR, value = {SysConstants.SUPER_REQUIRESPERMISSIONS,"sys:param:delete"})
     public Result delete(@RequestBody String[] ids){
         paramService.removeByIds(Arrays.asList(ids));
 

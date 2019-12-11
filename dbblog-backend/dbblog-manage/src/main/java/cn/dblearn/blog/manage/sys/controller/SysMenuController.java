@@ -3,15 +3,20 @@ package cn.dblearn.blog.manage.sys.controller;
 import cn.dblearn.blog.auth.service.ShiroService;
 import cn.dblearn.blog.common.Result;
 import cn.dblearn.blog.common.base.AbstractController;
+import cn.dblearn.blog.common.constants.SysConstants;
 import cn.dblearn.blog.common.enums.MenuTypeEnum;
 import cn.dblearn.blog.common.exception.MyException;
 import cn.dblearn.blog.common.util.HttpContextUtils;
 import cn.dblearn.blog.entity.sys.SysMenu;
+import cn.dblearn.blog.entity.sys.SysMenuOperate;
+import cn.dblearn.blog.manage.sys.service.SysMenuOperateService;
 import cn.dblearn.blog.manage.sys.service.SysMenuService;
 import org.apache.commons.lang.StringUtils;
+import org.apache.shiro.authz.annotation.Logical;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+import sun.rmi.runtime.Log;
 
 import java.util.List;
 import java.util.Map;
@@ -30,8 +35,13 @@ import java.util.Set;
 @RequestMapping("/admin/sys/menu")
 public class SysMenuController extends AbstractController {
 
+
+
     @Autowired
     private SysMenuService sysMenuService;
+
+    @Autowired
+    private SysMenuOperateService sysMenuOperateService;
 
     @Autowired
     private ShiroService shiroService;
@@ -47,7 +57,7 @@ public class SysMenuController extends AbstractController {
      * 所有菜单列表
      */
     @GetMapping("/list")
-    @RequiresPermissions("sys:menu:list")
+    @RequiresPermissions(logical = Logical.OR, value = {SysConstants.SUPER_REQUIRESPERMISSIONS,"sys:menu:list"})
     public List<SysMenu> list() {
         List<SysMenu> menuList = sysMenuService.list(null);
         menuList.forEach(sysMenu -> {
@@ -63,7 +73,7 @@ public class SysMenuController extends AbstractController {
      * 所有菜单列表
      */
     @GetMapping("/listbyid")
-    @RequiresPermissions("sys:menu:list")
+    @RequiresPermissions(logical = Logical.OR, value = {SysConstants.SUPER_REQUIRESPERMISSIONS,"sys:menu:list"})
     public List<SysMenu> listByParentid(@RequestParam Map<String, Object> params) {
 
         Integer parentid = Integer.valueOf(String.valueOf(HttpContextUtils.getStrRequest(params, "parentid", "0")));
@@ -82,7 +92,7 @@ public class SysMenuController extends AbstractController {
      * 选择菜单(添加、修改菜单)
      */
     @GetMapping("/select")
-    @RequiresPermissions("sys:menu:select")
+    @RequiresPermissions(logical = Logical.OR, value = {SysConstants.SUPER_REQUIRESPERMISSIONS,"sys:menu:select"})
     public Result select() {
         //查询列表数据
         List<SysMenu> menuList = sysMenuService.queryNotButtonList();
@@ -105,17 +115,18 @@ public class SysMenuController extends AbstractController {
      * @return
      */
     @GetMapping("/info/{menuId}")
-    @RequiresPermissions("sys:menu:info")
+    @RequiresPermissions(logical = Logical.OR, value = {SysConstants.SUPER_REQUIRESPERMISSIONS,"sys:menu:info"})
     public Result update(@PathVariable Integer menuId) {
         SysMenu menu = sysMenuService.getById(menuId);
-        return Result.ok().put("menu", menu);
+        List<SysMenuOperate> listMenuOperate = sysMenuOperateService.listMenuOperate(menuId);
+        return Result.ok().put("menu", menu).put("menuoperate",listMenuOperate);
     }
 
     /**
      * 保存
      */
     @PostMapping("/save")
-    @RequiresPermissions("sys:menu:save")
+    @RequiresPermissions(logical = Logical.OR, value = {SysConstants.SUPER_REQUIRESPERMISSIONS,"sys:menu:save"})
     public Result save(@RequestBody SysMenu menu) {
         //数据校验
         verifyForm(menu);
@@ -135,7 +146,7 @@ public class SysMenuController extends AbstractController {
      * @return
      */
     @PutMapping("/update")
-    @RequiresPermissions("sys:menu:update")
+    @RequiresPermissions(logical = Logical.OR, value = {SysConstants.SUPER_REQUIRESPERMISSIONS,"sys:menu:update"})
     public Result update(@RequestBody SysMenu menu) {
         //数据校验
         verifyForm(menu);
@@ -152,7 +163,7 @@ public class SysMenuController extends AbstractController {
      * @return
      */
     @DeleteMapping("/delete/{menuId}")
-    @RequiresPermissions("sys:menu:delete")
+    @RequiresPermissions(logical = Logical.OR, value = {SysConstants.SUPER_REQUIRESPERMISSIONS,"sys:menu:delete"})
     public Result delete(@PathVariable Integer menuId) {
         if (menuId <= 29) {
             return Result.error("系统菜单，不能删除");

@@ -3,11 +3,13 @@ package cn.dblearn.blog.manage.operation.controller;
 import cn.dblearn.blog.common.Result;
 import cn.dblearn.blog.common.base.AbstractController;
 import cn.dblearn.blog.common.constants.RedisCacheNames;
+import cn.dblearn.blog.common.constants.SysConstants;
 import cn.dblearn.blog.common.util.PageUtils;
 import cn.dblearn.blog.common.validator.ValidatorUtils;
 import cn.dblearn.blog.entity.operation.Recommend;
 import cn.dblearn.blog.entity.operation.vo.RecommendVO;
 import cn.dblearn.blog.manage.operation.service.RecommendService;
+import org.apache.shiro.authz.annotation.Logical;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.cache.annotation.CacheConfig;
 import org.springframework.cache.annotation.CacheEvict;
@@ -37,7 +39,7 @@ public class RecommendController extends AbstractController {
      * 列表
      */
     @GetMapping("/list")
-    @RequiresPermissions("operation:recommend:list")
+    @RequiresPermissions(logical = Logical.OR, value = {SysConstants.SUPER_REQUIRESPERMISSIONS,"operation:recommend:list"})
     public Result list(@RequestParam Map<String, Object> params){
         PageUtils page = recommendService.queryPage(params);
 
@@ -45,7 +47,7 @@ public class RecommendController extends AbstractController {
     }
 
     @GetMapping("/select")
-    @RequiresPermissions("operation:recommend:list")
+    @RequiresPermissions(logical = Logical.OR, value = {SysConstants.SUPER_REQUIRESPERMISSIONS,"operation:recommend:list"})
     public Result select () {
         List<RecommendVO> recommendList = recommendService.listSelect();
         return Result.ok().put("recommendList",recommendList);
@@ -56,7 +58,7 @@ public class RecommendController extends AbstractController {
      * 信息
      */
     @GetMapping("/info/{id}")
-    @RequiresPermissions("operation:recommend:info")
+    @RequiresPermissions(logical = Logical.OR, value = {SysConstants.SUPER_REQUIRESPERMISSIONS,"operation:recommend:info"})
     public Result info(@PathVariable("id") String id){
        Recommend recommend = recommendService.getById(id);
 
@@ -67,7 +69,7 @@ public class RecommendController extends AbstractController {
      * 保存
      */
     @PostMapping("/save")
-    @RequiresPermissions("operation:recommend:save")
+    @RequiresPermissions(logical = Logical.OR, value = {SysConstants.SUPER_REQUIRESPERMISSIONS,"operation:recommend:save"})
     @CacheEvict(allEntries = true)
     public Result save(@RequestBody Recommend recommend){
         ValidatorUtils.validateEntity(recommend);
@@ -80,7 +82,7 @@ public class RecommendController extends AbstractController {
      * 修改
      */
     @PutMapping("/update")
-    @RequiresPermissions("operation:recommend:update")
+    @RequiresPermissions(logical = Logical.OR, value = {SysConstants.SUPER_REQUIRESPERMISSIONS,"operation:recommend:update"})
     @CacheEvict(allEntries = true)
     public Result update(@RequestBody Recommend recommend){
         ValidatorUtils.validateEntity(recommend);
@@ -89,7 +91,7 @@ public class RecommendController extends AbstractController {
     }
 
     @PutMapping("/top/{id}")
-    @RequiresPermissions("operation:recommend:update")
+    @RequiresPermissions(logical = Logical.OR, value = {SysConstants.SUPER_REQUIRESPERMISSIONS,"operation:recommend:update"})
     @CacheEvict(allEntries = true)
     public Result updateTop (@PathVariable Integer id) {
         recommendService.updateTop(id);
@@ -100,7 +102,7 @@ public class RecommendController extends AbstractController {
      * 删除
      */
     @DeleteMapping("/delete")
-    @RequiresPermissions("operation:recommend:delete")
+    @RequiresPermissions(logical = Logical.OR, value = {SysConstants.SUPER_REQUIRESPERMISSIONS,"operation:recommend:delete"})
     @CacheEvict(allEntries = true)
     public Result delete(@RequestBody String[] ids){
         recommendService.removeByIds(Arrays.asList(ids));

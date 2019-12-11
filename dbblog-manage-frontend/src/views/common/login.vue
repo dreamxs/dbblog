@@ -86,6 +86,7 @@ export default {
           }).then(({data}) => {
             if (data && data.code === 200) {
               this.$cookie.set('token', data.token)
+              this.$cookie.set('userId', data.userId)
               this.$router.replace({ name: 'home' })
             } else {
               this.getCaptcha()

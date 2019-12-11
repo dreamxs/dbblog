@@ -56,6 +56,7 @@ public class ShiroServiceImpl implements ShiroService {
             List<SysMenu> menuList=sysMenuMapper.selectList(null);
             //菜单按钮权限列表 新增,删除,更新,list查看等
             permsList=new ArrayList<>(menuList.size());
+            permsList.add(SysConstants.SUPER_REQUIRESPERMISSIONS);
             menuList.forEach(menu ->  permsList.add(menu.getPerms()));
         }else {
             permsList = sysUserMapper.queryAllPerms(userId);

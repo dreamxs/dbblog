@@ -3,6 +3,7 @@ package cn.dblearn.blog.manage.operation.controller;
 import cn.dblearn.blog.common.Result;
 import cn.dblearn.blog.common.base.AbstractController;
 import cn.dblearn.blog.common.constants.RedisCacheNames;
+import cn.dblearn.blog.common.constants.SysConstants;
 import cn.dblearn.blog.common.enums.ModuleEnum;
 import cn.dblearn.blog.common.util.PageUtils;
 import cn.dblearn.blog.common.validator.ValidatorUtils;
@@ -11,6 +12,7 @@ import cn.dblearn.blog.entity.operation.TagLink;
 import cn.dblearn.blog.manage.operation.service.TagService;
 import cn.dblearn.blog.mapper.operation.TagLinkMapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import org.apache.shiro.authz.annotation.Logical;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.cache.annotation.CacheConfig;
 import org.springframework.cache.annotation.CacheEvict;
@@ -44,7 +46,7 @@ public class TagController extends AbstractController {
      * 列表
      */
     @GetMapping("/list")
-    @RequiresPermissions("operation:tag:list")
+    @RequiresPermissions(logical = Logical.OR, value = {SysConstants.SUPER_REQUIRESPERMISSIONS,"operation:tag:list"})
     public Result list(@RequestParam Map<String, Object> params){
         PageUtils page = tagService.queryPage(params);
 
@@ -52,7 +54,7 @@ public class TagController extends AbstractController {
     }
 
     @GetMapping("/select")
-    @RequiresPermissions("operation:tag:list")
+    @RequiresPermissions(logical = Logical.OR, value = {SysConstants.SUPER_REQUIRESPERMISSIONS,"operation:tag:list"})
     public Result select(@RequestParam("type") Integer type){
         List<Tag> tagList = tagService.list(new QueryWrapper<Tag>().lambda().eq(type != null,Tag::getType,type));
         return Result.ok().put("tagList",tagList);
@@ -63,7 +65,7 @@ public class TagController extends AbstractController {
      * 信息
      */
     @GetMapping("/info/{id}")
-    @RequiresPermissions("operation:tag:info")
+    @RequiresPermissions(logical = Logical.OR, value = {SysConstants.SUPER_REQUIRESPERMISSIONS,"operation:tag:info"})
     public Result info(@PathVariable("id") String id){
        Tag tag = tagService.getById(id);
 
@@ -74,7 +76,7 @@ public class TagController extends AbstractController {
      * 保存
      */
     @PostMapping("/save")
-    @RequiresPermissions("operation:tag:save")
+    @RequiresPermissions(logical = Logical.OR, value = {SysConstants.SUPER_REQUIRESPERMISSIONS,"operation:tag:save"})
     @CacheEvict(allEntries = true)
     public Result save(@RequestBody Tag tag){
         ValidatorUtils.validateEntity(tag);
@@ -87,7 +89,7 @@ public class TagController extends AbstractController {
      * 修改
      */
     @PutMapping("/update")
-    @RequiresPermissions("operation:tag:update")
+    @RequiresPermissions(logical = Logical.OR, value = {SysConstants.SUPER_REQUIRESPERMISSIONS,"operation:tag:update"})
     @CacheEvict(allEntries = true)
     public Result update(@RequestBody Tag tag){
         ValidatorUtils.validateEntity(tag);
@@ -99,7 +101,7 @@ public class TagController extends AbstractController {
      * 删除
      */
     @DeleteMapping("/delete")
-    @RequiresPermissions("operation:tag:delete")
+    @RequiresPermissions(logical = Logical.OR, value = {SysConstants.SUPER_REQUIRESPERMISSIONS,"operation:tag:delete"})
     @CacheEvict(allEntries = true)
     public Result delete(@RequestBody String[] ids){
         for (String id : ids) {

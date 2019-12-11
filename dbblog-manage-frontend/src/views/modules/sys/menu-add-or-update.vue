@@ -36,7 +36,26 @@
         <el-input v-model="dataForm.url" placeholder="菜单路由"></el-input>
       </el-form-item>
       <el-form-item v-if="dataForm.type !== 0" label="授权标识" prop="perms">
-        <el-input v-model="dataForm.perms" placeholder="多个用逗号分隔, 如: user:list,user:create"></el-input>
+        <!--<el-input v-model="dataForm.perms" placeholder="多个用逗号分隔, 如: user:list,user:create"></el-input>-->
+        <el-tag
+          :key="tag"
+          v-for="tag in dynamicTags"
+          closable
+          :disable-transitions="false"
+          @close="handleClose(tag)">
+          {{tag}}
+        </el-tag>
+        <el-input
+          class="input-new-tag"
+          v-if="inputVisible"
+          v-model="inputValue"
+          ref="saveTagInput"
+          size="small"
+          @keyup.enter.native="handleInputConfirm"
+          @blur="handleInputConfirm"
+        >
+        </el-input>
+        <el-button v-else class="button-new-tag" size="small" @click="showInput">+ New Tag</el-button>
       </el-form-item>
       <el-form-item v-if="dataForm.type !== 2" label="排序号" prop="orderNum">
         <el-input-number v-model="dataForm.orderNum" controls-position="right" :min="0" label="排序号"></el-input-number>
@@ -94,6 +113,9 @@ export default {
       visible: false,
       menupoppervisible: false,
       iconvisible: false,
+      dynamicTags: ['标签一', '标签二', '标签三'],
+      inputVisible: false,
+      inputValue: '',
       dataForm: {
         id: 0,
         type: 1,
@@ -236,6 +258,23 @@ export default {
           })
         }
       })
+    },
+    handleClose (tag) {
+      this.dynamicTags.splice(this.dynamicTags.indexOf(tag), 1)
+    },
+    showInput () {
+      this.inputVisible = true
+      this.$nextTick(_ => {
+        this.$refs.saveTagInput.$refs.input.focus()
+      })
+    },
+    handleInputConfirm () {
+      let inputValue = this.inputValue
+      if (inputValue) {
+        this.dynamicTags.push(inputValue)
+      }
+      this.inputVisible = false
+      this.inputValue = ''
     }
   }
 }

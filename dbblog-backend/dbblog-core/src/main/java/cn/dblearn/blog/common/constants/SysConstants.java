@@ -8,10 +8,12 @@ package cn.dblearn.blog.common.constants;
  * @email 571002217@qq.com
  * @description 系统常量
  */
-public class SysConstants {
+public final  class SysConstants {
     /**
      * 超级管理员账号Id
      */
-    public static Integer SUPER_ADMIN=1;
+    public static final Integer SUPER_ADMIN=1;
+
+    public static final String SUPER_REQUIRESPERMISSIONS="user:1";
 
 }

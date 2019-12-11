@@ -2,11 +2,13 @@ package cn.dblearn.blog.manage.sys.controller;
 
 import cn.dblearn.blog.common.Result;
 import cn.dblearn.blog.common.base.AbstractController;
+import cn.dblearn.blog.common.constants.SysConstants;
 import cn.dblearn.blog.common.util.PageUtils;
 import cn.dblearn.blog.common.validator.ValidatorUtils;
 import cn.dblearn.blog.entity.sys.SysTagCategory;
 import cn.dblearn.blog.manage.sys.service.SysTagCategoryService;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.shiro.authz.annotation.Logical;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -33,7 +35,7 @@ public class SysTagCategoryController extends AbstractController {
      * 列表
      */
     @GetMapping("/list")
-    @RequiresPermissions("sys:category:list")
+    @RequiresPermissions(logical = Logical.OR, value = {SysConstants.SUPER_REQUIRESPERMISSIONS,"sys:category:list"})
     public Result list(@RequestParam Map<String, Object> params){
         PageUtils page = categoryService.queryPage(params);
 
@@ -45,7 +47,7 @@ public class SysTagCategoryController extends AbstractController {
      * 信息
      */
     @GetMapping("/info/{id}")
-    @RequiresPermissions("sys:category:info")
+    @RequiresPermissions(logical = Logical.OR, value = {SysConstants.SUPER_REQUIRESPERMISSIONS,"sys:category:info"})
     public Result info(@PathVariable("id") String id){
        SysTagCategory category = categoryService.getById(id);
 
@@ -56,7 +58,7 @@ public class SysTagCategoryController extends AbstractController {
      * 保存
      */
     @PostMapping("/save")
-    @RequiresPermissions("sys:category:save")
+    @RequiresPermissions(logical = Logical.OR, value = {SysConstants.SUPER_REQUIRESPERMISSIONS,"sys:category:save"})
     public Result save(@RequestBody SysTagCategory category){
         ValidatorUtils.validateEntity(category);
         categoryService.save(category);
@@ -68,7 +70,7 @@ public class SysTagCategoryController extends AbstractController {
      * 修改
      */
     @PutMapping("/update")
-    @RequiresPermissions("sys:category:update")
+    @RequiresPermissions(logical = Logical.OR, value = {SysConstants.SUPER_REQUIRESPERMISSIONS,"sys:category:update"})
     public Result update(@RequestBody SysTagCategory category){
         ValidatorUtils.validateEntity(category);
         categoryService.updateById(category);
@@ -79,7 +81,7 @@ public class SysTagCategoryController extends AbstractController {
      * 删除
      */
     @DeleteMapping("/delete")
-    @RequiresPermissions("sys:category:delete")
+    @RequiresPermissions(logical = Logical.OR, value = {SysConstants.SUPER_REQUIRESPERMISSIONS,"sys:category:delete"})
     public Result delete(@RequestBody String[] ids){
         categoryService.removeByIds(Arrays.asList(ids));
         return Result.ok();

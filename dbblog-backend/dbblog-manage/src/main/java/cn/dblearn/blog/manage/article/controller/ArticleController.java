@@ -2,6 +2,7 @@ package cn.dblearn.blog.manage.article.controller;
 
 import cn.dblearn.blog.common.Result;
 import cn.dblearn.blog.common.constants.RedisCacheNames;
+import cn.dblearn.blog.common.constants.SysConstants;
 import cn.dblearn.blog.common.enums.ModuleEnum;
 import cn.dblearn.blog.common.mq.annotation.RefreshEsMqSender;
 import cn.dblearn.blog.common.util.PageUtils;
@@ -10,6 +11,7 @@ import cn.dblearn.blog.entity.article.Article;
 import cn.dblearn.blog.entity.article.dto.ArticleDTO;
 import cn.dblearn.blog.manage.article.service.ArticleService;
 import cn.dblearn.blog.manage.operation.service.RecommendService;
+import org.apache.shiro.authz.annotation.Logical;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.cache.annotation.CacheConfig;
 import org.springframework.cache.annotation.CacheEvict;
@@ -47,21 +49,21 @@ public class ArticleController {
     private RedisTemplate<String,Object> redisTemplate;
 
     @GetMapping("/list")
-    @RequiresPermissions("article:list")
+    @RequiresPermissions(logical = Logical.OR, value = {SysConstants.SUPER_REQUIRESPERMISSIONS,"article:list"})
     public Result listArticle(@RequestParam Map<String, Object> params) {
         PageUtils page = articleService.queryPage(params);
         return Result.ok().put("page",page);
     }
 
     @GetMapping("/info/{articleId}")
-    @RequiresPermissions("article:list")
+    @RequiresPermissions(logical = Logical.OR, value = {SysConstants.SUPER_REQUIRESPERMISSIONS,"article:list"})
     public Result info(@PathVariable Integer articleId) {
         ArticleDTO article = articleService.getArticle(articleId);
         return Result.ok().put("article",article);
     }
 
     @PostMapping("/save")
-    @RequiresPermissions("article:save")
+    @RequiresPermissions(logical = Logical.OR, value = {SysConstants.SUPER_REQUIRESPERMISSIONS,"article:save"})
     @CacheEvict(allEntries = true)
     @RefreshEsMqSender(sender = "dbblog-manage-saveArticle")
     public Result saveArticle(@RequestBody ArticleDTO article){
@@ -71,7 +73,7 @@ public class ArticleController {
     }
 
     @PutMapping("/update")
-    @RequiresPermissions("article:update")
+    @RequiresPermissions(logical = Logical.OR, value = {SysConstants.SUPER_REQUIRESPERMISSIONS,"article:update"})
     @CacheEvict(allEntries = true)
     @RefreshEsMqSender(sender = "dbblog-manage-updateArticle")
     public Result updateArticle(@RequestBody ArticleDTO article){
@@ -81,7 +83,7 @@ public class ArticleController {
     }
 
     @PutMapping("/update/status")
-    @RequiresPermissions("article:update")
+    @RequiresPermissions(logical = Logical.OR, value = {SysConstants.SUPER_REQUIRESPERMISSIONS,"article:update"})
     @CacheEvict(allEntries = true)
     @RefreshEsMqSender(sender = "dbblog-manage-updateStatus")
     public Result updateStatus(@RequestBody Article article) {
@@ -91,7 +93,7 @@ public class ArticleController {
 
 
     @DeleteMapping("/delete")
-    @RequiresPermissions("article:delete")
+    @RequiresPermissions(logical = Logical.OR, value = {SysConstants.SUPER_REQUIRESPERMISSIONS,"article:delete"})
     @Transactional(rollbackFor = Exception.class)
     @CacheEvict(allEntries = true)
     @RefreshEsMqSender(sender = "dbblog-manage-deleteArticle")
@@ -102,7 +104,7 @@ public class ArticleController {
     }
 
     @DeleteMapping("/cache/refresh")
-    @RequiresPermissions("article:cache:refresh")
+    @RequiresPermissions(logical = Logical.OR, value = {SysConstants.SUPER_REQUIRESPERMISSIONS,"article:cache:refresh"})
     public Result flush() {
         Set<String> keys = redisTemplate.keys(RedisCacheNames.PROFIX+"*");
         redisTemplate.delete(keys);

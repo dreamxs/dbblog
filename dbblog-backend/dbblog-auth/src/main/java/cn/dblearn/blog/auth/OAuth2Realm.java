@@ -43,6 +43,16 @@ public class OAuth2Realm extends AuthorizingRealm {
      *因为PrincipalCollection聚合了多个，此处最需要注意的是getPrimaryPrincipal，如果只有一个Principal 那么直接返回即可，
      * 如果有多个Principal，则返回第一个（因为内部使用Map存储，所以可以认为是返回任意一个）；
      *
+     *
+     *
+     * @RequiresPermissions
+     * 授权处理过程
+     * 认证通过后接受 Shiro 授权检查，授权验证时，需要判断当前角色是否拥有该权限。
+     * 只有授权通过，才可以访问受保护 URL 对应的资源，否则跳转到“未经授权页面”。
+     * 如果我们自定义Realm实现，比如我后面的例子中，自定义了Realm类，当访问被@RequiresPermissions注解的方法时，会先执行自定义.doGetAuthorizationInfo()进行授权。
+     * @RequiresPermissions (value = { “ user : a ”, “ user : b ” }, logical = Logical.OR)
+     *
+     * 设置登录用户权限
      */
     @Override
     protected AuthorizationInfo doGetAuthorizationInfo(PrincipalCollection principals) {
@@ -60,6 +70,10 @@ public class OAuth2Realm extends AuthorizingRealm {
     }
     /**
      * 认证(登录时调用)
+     * 登录校验
+     * 1.token验证
+     * 2.账号状态
+     * 3.SimpleAuthenticationInfo 用户密码验证
      * 身份认证。即登录通过账号和密码验证登陆人的身份信息。
      */
     @Override

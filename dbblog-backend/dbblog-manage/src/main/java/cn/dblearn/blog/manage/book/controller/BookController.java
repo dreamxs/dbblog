@@ -3,11 +3,13 @@ package cn.dblearn.blog.manage.book.controller;
 import cn.dblearn.blog.common.Result;
 import cn.dblearn.blog.common.base.AbstractController;
 import cn.dblearn.blog.common.constants.RedisCacheNames;
+import cn.dblearn.blog.common.constants.SysConstants;
 import cn.dblearn.blog.common.util.PageUtils;
 import cn.dblearn.blog.common.validator.ValidatorUtils;
 import cn.dblearn.blog.entity.book.Book;
 import cn.dblearn.blog.entity.book.dto.BookDTO;
 import cn.dblearn.blog.manage.book.service.BookService;
+import org.apache.shiro.authz.annotation.Logical;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.cache.annotation.CacheConfig;
 import org.springframework.cache.annotation.CacheEvict;
@@ -36,7 +38,7 @@ public class BookController extends AbstractController {
      * 列表
      */
     @GetMapping("/list")
-    @RequiresPermissions("book:list")
+    @RequiresPermissions(logical = Logical.OR, value = {SysConstants.SUPER_REQUIRESPERMISSIONS,"book:list"})
     public Result list(@RequestParam Map<String, Object> params) {
         PageUtils page = bookService.queryPage(params);
 
@@ -47,7 +49,7 @@ public class BookController extends AbstractController {
      * 列表
      */
     @GetMapping("/select")
-    @RequiresPermissions("book:list")
+    @RequiresPermissions(logical = Logical.OR, value = {SysConstants.SUPER_REQUIRESPERMISSIONS,"book:list"})
     public Result select() {
         List<Book> bookList = bookService.list(null);
         return Result.ok().put("bookList", bookList);
@@ -58,7 +60,7 @@ public class BookController extends AbstractController {
      * 信息
      */
     @GetMapping("/info/{id}")
-    @RequiresPermissions("book:info")
+    @RequiresPermissions(logical = Logical.OR, value = {SysConstants.SUPER_REQUIRESPERMISSIONS,"book:info"})
     public Result info(@PathVariable("id") String id) {
         BookDTO book = bookService.getBook(id);
         return Result.ok().put("book", book);
@@ -69,7 +71,7 @@ public class BookController extends AbstractController {
      */
     @PostMapping("/save")
     @CacheEvict(allEntries = true)
-    @RequiresPermissions("book:save")
+    @RequiresPermissions(logical = Logical.OR, value = {SysConstants.SUPER_REQUIRESPERMISSIONS,"book:save"})
     public Result save(@RequestBody BookDTO book) {
         ValidatorUtils.validateEntity(book);
         bookService.saveBook(book);
@@ -82,7 +84,7 @@ public class BookController extends AbstractController {
      */
     @PutMapping("/update")
     @CacheEvict(allEntries = true)
-    @RequiresPermissions("book:update")
+    @RequiresPermissions(logical = Logical.OR, value = {SysConstants.SUPER_REQUIRESPERMISSIONS,"book:update"})
     public Result update(@RequestBody BookDTO book) {
         ValidatorUtils.validateEntity(book);
         bookService.updateBook(book);
@@ -97,7 +99,7 @@ public class BookController extends AbstractController {
      */
     @PutMapping("/update/status")
     @CacheEvict(allEntries = true)
-    @RequiresPermissions("book:update")
+    @RequiresPermissions(logical = Logical.OR, value = {SysConstants.SUPER_REQUIRESPERMISSIONS,"book:update"})
     public Result updateStatus(@RequestBody Book readBook) {
         bookService.updateById(readBook);
         return Result.ok();
@@ -108,7 +110,7 @@ public class BookController extends AbstractController {
      */
     @DeleteMapping("/delete")
     @CacheEvict(allEntries = true)
-    @RequiresPermissions("book:delete")
+    @RequiresPermissions(logical = Logical.OR, value = {SysConstants.SUPER_REQUIRESPERMISSIONS,"book:delete"})
     public Result delete(@RequestBody Integer[] ids) {
         bookService.deleteBatch(ids);
 

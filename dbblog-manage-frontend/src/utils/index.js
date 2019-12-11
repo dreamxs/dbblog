@@ -16,7 +16,7 @@ export function getUUID () {
  * @date 18-9-28
 */
 export function isAuth (key) {
-  return JSON.parse(sessionStorage.getItem('permissions') || '[]').indexOf(key) !== -1 || false
+  return Vue.cookie.get('userId') === '1' || JSON.parse(sessionStorage.getItem('permissions') || '[]').indexOf(key) !== -1 || false
 }
 /**
  * 树形数据转换
@@ -54,6 +54,7 @@ export function treeDataTranslate (data, id = 'id', pid = 'parentId') {
 */
 export function clearLoginInfo () {
   Vue.cookie.delete('token')
+  Vue.cookie.delete('userId')
   store.commit('resetStore')
   router.options.isAddDynamicMenuRoutes = false
 }

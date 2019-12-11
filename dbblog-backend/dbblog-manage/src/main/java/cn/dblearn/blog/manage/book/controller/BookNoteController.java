@@ -2,6 +2,7 @@ package cn.dblearn.blog.manage.book.controller;
 
 import cn.dblearn.blog.common.Result;
 import cn.dblearn.blog.common.constants.RedisCacheNames;
+import cn.dblearn.blog.common.constants.SysConstants;
 import cn.dblearn.blog.common.enums.ModuleEnum;
 import cn.dblearn.blog.common.util.PageUtils;
 import cn.dblearn.blog.common.validator.ValidatorUtils;
@@ -9,6 +10,7 @@ import cn.dblearn.blog.entity.book.BookNote;
 import cn.dblearn.blog.entity.book.dto.BookNoteDTO;
 import cn.dblearn.blog.manage.book.service.BookNoteService;
 import cn.dblearn.blog.manage.operation.service.RecommendService;
+import org.apache.shiro.authz.annotation.Logical;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.cache.annotation.CacheConfig;
 import org.springframework.cache.annotation.CacheEvict;
@@ -40,21 +42,21 @@ public class BookNoteController {
     private RecommendService recommendService;
 
     @GetMapping("/list")
-    @RequiresPermissions("book:note:list")
+    @RequiresPermissions(logical = Logical.OR, value = {SysConstants.SUPER_REQUIRESPERMISSIONS,"book:note:list"})
     public Result listBookNote(@RequestParam Map<String, Object> params) {
         PageUtils page = bookNoteService.queryPage(params);
         return Result.ok().put("page",page);
     }
 
     @GetMapping("/info/{bookNoteId}")
-    @RequiresPermissions("book:note:list")
+    @RequiresPermissions(logical = Logical.OR, value = {SysConstants.SUPER_REQUIRESPERMISSIONS,"book:note:list"})
     public Result info(@PathVariable Integer bookNoteId) {
         BookNoteDTO bookNote = bookNoteService.getBookNote(bookNoteId);
         return Result.ok().put("bookNote",bookNote);
     }
 
     @PostMapping("/save")
-    @RequiresPermissions("book:note:save")
+    @RequiresPermissions(logical = Logical.OR, value = {SysConstants.SUPER_REQUIRESPERMISSIONS,"book:note:save"})
     @CacheEvict(allEntries = true)
     public Result saveBookNote(@RequestBody BookNoteDTO bookNote){
         ValidatorUtils.validateEntity(bookNote);
@@ -63,7 +65,7 @@ public class BookNoteController {
     }
 
     @PutMapping("/update")
-    @RequiresPermissions("book:note:update")
+    @RequiresPermissions(logical = Logical.OR, value = {SysConstants.SUPER_REQUIRESPERMISSIONS,"book:note:update"})
     @CacheEvict(allEntries = true)
     public Result updateBookNote(@RequestBody BookNoteDTO bookNote){
         ValidatorUtils.validateEntity(bookNote);
@@ -72,7 +74,7 @@ public class BookNoteController {
     }
 
     @PutMapping("/update/status")
-    @RequiresPermissions("book:note:update")
+    @RequiresPermissions(logical = Logical.OR, value = {SysConstants.SUPER_REQUIRESPERMISSIONS,"book:note:update"})
     @CacheEvict(allEntries = true)
     public Result updateStatus(@RequestBody BookNote bookNote) {
         bookNoteService.updateById(bookNote);
@@ -81,7 +83,7 @@ public class BookNoteController {
 
 
     @DeleteMapping("/delete")
-    @RequiresPermissions("book:note:delete")
+    @RequiresPermissions(logical = Logical.OR, value = {SysConstants.SUPER_REQUIRESPERMISSIONS,"book:note:delete"})
     @Transactional(rollbackFor = Exception.class)
     @CacheEvict(allEntries = true)
     public Result deleteBatch(@RequestBody Integer[] bookNoteIds){

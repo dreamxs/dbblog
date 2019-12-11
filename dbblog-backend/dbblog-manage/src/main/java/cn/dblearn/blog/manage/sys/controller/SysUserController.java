@@ -14,6 +14,7 @@ import cn.dblearn.blog.manage.sys.service.SysUserRoleService;
 import cn.dblearn.blog.manage.sys.service.SysUserService;
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.StringUtils;
+import org.apache.shiro.authz.annotation.Logical;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.apache.shiro.crypto.hash.Sha256Hash;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -52,7 +53,7 @@ public class SysUserController extends AbstractController {
      * 所有用户列表
      */
     @GetMapping("/list")
-    @RequiresPermissions("sys:user:list")
+    @RequiresPermissions(logical = Logical.OR, value = {SysConstants.SUPER_REQUIRESPERMISSIONS,"sys:user:list"})
     public Result list(@RequestParam Map<String, Object> params){
         //只有超级管理员，才能查看所有管理员列表
         if(!SysConstants.SUPER_ADMIN.equals(getUserId())){
@@ -90,7 +91,7 @@ public class SysUserController extends AbstractController {
      * 保存用户
      */
     @PostMapping("/save")
-    @RequiresPermissions("sys:user:save")
+    @RequiresPermissions(logical = Logical.OR, value = {SysConstants.SUPER_REQUIRESPERMISSIONS,"sys:user:save"})
     public Result save(@RequestBody SysUser user){
         ValidatorUtils.validateEntity(user, AddGroup.class);
 
@@ -104,7 +105,7 @@ public class SysUserController extends AbstractController {
      * 修改用户
      */
     @PostMapping("/update")
-    @RequiresPermissions("sys:user:update")
+    @RequiresPermissions(logical = Logical.OR, value = {SysConstants.SUPER_REQUIRESPERMISSIONS,"sys:user:update"})
     public Result update(@RequestBody SysUser user){
         ValidatorUtils.validateEntity(user, UpdateGroup.class);
 
@@ -118,7 +119,7 @@ public class SysUserController extends AbstractController {
      * 删除用户
      */
     @PostMapping("/delete")
-    @RequiresPermissions("sys:user:delete")
+    @RequiresPermissions(logical = Logical.OR, value = {SysConstants.SUPER_REQUIRESPERMISSIONS,"sys:user:delete"})
     public Result delete(@RequestBody Integer[] userIds){
         if(ArrayUtils.contains(userIds, SysConstants.SUPER_ADMIN)){
             return Result.error("系统管理员不能删除");
@@ -137,7 +138,7 @@ public class SysUserController extends AbstractController {
      * 用户信息
      */
     @GetMapping("/info/{userId}")
-    @RequiresPermissions("sys:user:info")
+    @RequiresPermissions(logical = Logical.OR, value = {SysConstants.SUPER_REQUIRESPERMISSIONS,"sys:user:info"})
     public Result info(@PathVariable("userId") Integer userId){
         SysUser user = sysUserService.getById(userId);
 

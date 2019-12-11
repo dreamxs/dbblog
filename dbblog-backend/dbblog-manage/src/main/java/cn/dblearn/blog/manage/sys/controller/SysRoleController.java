@@ -8,6 +8,7 @@ import cn.dblearn.blog.common.validator.ValidatorUtils;
 import cn.dblearn.blog.entity.sys.SysRole;
 import cn.dblearn.blog.manage.sys.service.SysRoleMenuService;
 import cn.dblearn.blog.manage.sys.service.SysRoleService;
+import org.apache.shiro.authz.annotation.Logical;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -41,7 +42,7 @@ public class SysRoleController extends AbstractController {
      * @return
      */
     @GetMapping("/list")
-    @RequiresPermissions("sys:role:list")
+    @RequiresPermissions(logical = Logical.OR, value = {SysConstants.SUPER_REQUIRESPERMISSIONS,"sys:role:list"})
     public Result list(@RequestParam Map<String, Object> params){
         //如果不是超级管理员，则只查询自己创建的角色列表
         if(!SysConstants.SUPER_ADMIN.equals(getUserId())){
@@ -57,7 +58,7 @@ public class SysRoleController extends AbstractController {
      * 角色列表
      */
     @GetMapping("/select")
-    @RequiresPermissions("sys:role:select")
+    @RequiresPermissions(logical = Logical.OR, value = {SysConstants.SUPER_REQUIRESPERMISSIONS,"sys:role:select"})
     public Result select(){
         Map<String, Object> map = new HashMap<>();
 
@@ -75,7 +76,7 @@ public class SysRoleController extends AbstractController {
      * @return
      */
     @PostMapping("/save")
-    @RequiresPermissions("sys:role:save")
+    @RequiresPermissions(logical = Logical.OR, value = {SysConstants.SUPER_REQUIRESPERMISSIONS,"sys:role:save"})
     public Result save(@RequestBody SysRole role){
         ValidatorUtils.validateEntity(role);
 
@@ -91,7 +92,7 @@ public class SysRoleController extends AbstractController {
      * @return
      */
     @PutMapping("/update")
-    @RequiresPermissions("sys:role:update")
+    @RequiresPermissions(logical = Logical.OR, value = {SysConstants.SUPER_REQUIRESPERMISSIONS,"sys:role:update"})
     public Result update(@RequestBody SysRole role){
         ValidatorUtils.validateEntity(role);
         role.setCreateUserId(getUserId());
@@ -107,7 +108,7 @@ public class SysRoleController extends AbstractController {
      * @return
      */
     @GetMapping("/info/{roleId}")
-    @RequiresPermissions("sys:role:info")
+    @RequiresPermissions(logical = Logical.OR, value = {SysConstants.SUPER_REQUIRESPERMISSIONS,"sys:role:info"})
     public Result info(@PathVariable Integer roleId){
         SysRole role = sysRoleService.getById(roleId);
         List<Integer> menuIdList=sysRoleMenuService.queryMenuIdList(roleId);
@@ -121,7 +122,7 @@ public class SysRoleController extends AbstractController {
      * @return
      */
     @DeleteMapping("/delete")
-    @RequiresPermissions("sys:role:delete")
+    @RequiresPermissions(logical = Logical.OR, value = {SysConstants.SUPER_REQUIRESPERMISSIONS,"sys:role:delete"})
     public Result delete(@RequestBody Integer[] roleIds){
         sysRoleService.deleteBatch(roleIds);
 
