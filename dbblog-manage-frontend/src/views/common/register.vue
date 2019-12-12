@@ -13,10 +13,10 @@
               <el-input v-model="dataForm.userName" placeholder="帐号"></el-input>
             </el-form-item>
             <el-form-item prop="password">
-              <el-input v-model="dataForm.password" type="password" placeholder="密码"></el-input>
+              <el-input v-model="dataForm.password" type="password" placeholder="密码" auto-complete="off"></el-input>
             </el-form-item>
             <el-form-item prop="password2">
-              <el-input v-model="dataForm.password2" type="password" placeholder="确认密码"></el-input>
+              <el-input v-model="dataForm.password2" type="password" placeholder="确认密码" auto-complete="off"></el-input>
             </el-form-item>
             <el-form-item prop="email">
               <el-input v-model="dataForm.email" placeholder="邮箱"></el-input>
@@ -48,6 +48,15 @@ import { getUUID } from '@/utils'
 
 export default {
   data () {
+    var validatePass2 = (rule, value, callback) => {
+      if (value === '') {
+        callback(new Error('请再次输入密码'))
+      } else if (value !== this.dataForm.password) {
+        callback(new Error('两次输入密码不一致!'))
+      } else {
+        callback()
+      }
+    }
     return {
       dataForm: {
         userName: '',
@@ -65,7 +74,7 @@ export default {
           { required: true, message: '密码不能为空', trigger: 'blur' }
         ],
         password2: [
-          { required: true, message: '密码不能为空', trigger: 'blur' }
+          { validator: validatePass2, trigger: 'blur' }
         ],
         email: [
           { required: true, message: '邮箱格式不对', trigger: 'blur', type: 'email' }
