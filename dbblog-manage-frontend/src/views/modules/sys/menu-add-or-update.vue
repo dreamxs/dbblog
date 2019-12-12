@@ -41,6 +41,7 @@
           :key="tag"
           v-for="tag in dynamicTags"
           closable
+          @click.native="handleTagInput(tag)"
           :disable-transitions="false"
           @close="handleClose(tag)">
           {{tag}}
@@ -53,6 +54,7 @@
           size="small"
           @keyup.enter.native="handleInputConfirm"
           @blur="handleInputConfirm"
+          @click="showInput"
         >
         </el-input>
         <el-button v-else class="button-new-tag" size="small" @click="showInput">+ New Tag</el-button>
@@ -111,11 +113,13 @@ export default {
     }
     return {
       visible: false,
+      editmodel: false,
       menupoppervisible: false,
       iconvisible: false,
       dynamicTags: ['标签一', '标签二', '标签三'],
       inputVisible: false,
       inputValue: '',
+      tagValue: '',
       dataForm: {
         id: 0,
         type: 1,
@@ -262,6 +266,16 @@ export default {
     handleClose (tag) {
       this.dynamicTags.splice(this.dynamicTags.indexOf(tag), 1)
     },
+    handleTagInput (tag) {
+      this.$message({
+        message: tag,
+        type: 'warning'
+      })
+      this.inputValue = tag
+      this.editmodel = true
+      this.tagValue = tag
+      this.showInput()
+    },
     showInput () {
       this.inputVisible = true
       this.$nextTick(_ => {
@@ -270,11 +284,15 @@ export default {
     },
     handleInputConfirm () {
       let inputValue = this.inputValue
-      if (inputValue) {
+      if (inputValue && !this.editmodel) {
         this.dynamicTags.push(inputValue)
+      } else {
+        this.dynamicTags.splice(this.dynamicTags.indexOf(this.tagValue), 1, this.inputValue)
       }
+      this.editmodel = false
       this.inputVisible = false
       this.inputValue = ''
+      this.tagValue = ''
     }
   }
 }
@@ -313,5 +331,20 @@ export default {
       color: #e6a23c;
       cursor: pointer;
     }
+  }
+  .el-tag + .el-tag {
+    margin-left: 10px;
+  }
+  .button-new-tag {
+    margin-left: 10px;
+    height: 32px;
+    line-height: 30px;
+    padding-top: 0;
+    padding-bottom: 0;
+  }
+  .input-new-tag {
+    width: 90px;
+    margin-left: 10px;
+    vertical-align: bottom;
   }
 </style>
