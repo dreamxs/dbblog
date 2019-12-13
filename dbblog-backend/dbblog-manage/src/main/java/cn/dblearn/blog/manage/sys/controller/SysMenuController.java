@@ -7,6 +7,8 @@ import cn.dblearn.blog.common.constants.SysConstants;
 import cn.dblearn.blog.common.enums.MenuTypeEnum;
 import cn.dblearn.blog.common.exception.MyException;
 import cn.dblearn.blog.common.util.HttpContextUtils;
+import cn.dblearn.blog.common.validator.ValidatorUtils;
+import cn.dblearn.blog.entity.operation.Tag;
 import cn.dblearn.blog.entity.sys.SysMenu;
 import cn.dblearn.blog.entity.sys.SysMenuOperate;
 import cn.dblearn.blog.manage.sys.service.SysMenuOperateService;
@@ -15,6 +17,7 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.shiro.authz.annotation.Logical;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.web.bind.annotation.*;
 import sun.rmi.runtime.Log;
 
@@ -119,8 +122,10 @@ public class SysMenuController extends AbstractController {
     public Result update(@PathVariable Integer menuId) {
         SysMenu menu = sysMenuService.getById(menuId);
         List<SysMenuOperate> listMenuOperate = sysMenuOperateService.listMenuOperate(menuId);
-        return Result.ok().put("menu", menu).put("menuoperate",listMenuOperate);
+        return Result.ok().put("menu", menu).put("menuOperate",listMenuOperate);
     }
+
+
 
     /**
      * 保存
@@ -178,6 +183,19 @@ public class SysMenuController extends AbstractController {
         return Result.ok();
     }
 
+    /**
+     * 保存
+     */
+    @PostMapping("/operate/save")
+    @RequiresPermissions(logical = Logical.OR, value = {SysConstants.SUPER_REQUIRESPERMISSIONS,"operation:tag:save"})
+    @CacheEvict(allEntries = true)
+    public Result save(@RequestBody SysMenuOperate menuOperate){
+        ValidatorUtils.validateEntity(menuOperate);
+        verifyOperateForm(menuOperate);
+        sysMenuOperateService.save(menuOperate);
+
+        return Result.ok();
+    }
 
     /**
      * 验证参数是否正确
@@ -219,6 +237,39 @@ public class SysMenuController extends AbstractController {
                 throw new MyException("上级菜单只能为菜单类型");
             }
         }
+    }
+
+    /**
+     * 验证参数是否正确
+     */
+    private void verifyOperateForm(SysMenuOperate menuOperate) {
+        if (menuOperate==null) {
+            throw new MyException("操作不能为空");
+        }
+
+        if (StringUtils.isBlank(menuOperate.getOperatename())) {
+            throw new MyException("操作名称不能为空");
+        }
+
+        if (menuOperate.getMenuid()==null) {
+            throw new MyException("菜单标识不能为空");
+        }
+
+       // { name: '标签一', type: '' },
+       // { name: '标签二', type: 'success' },
+       // { name: '标签三', type: 'info' },
+       // { name: '标签四', type: 'warning' },
+       // { name: '标签五', type: 'danger' }
+        if(menuOperate.getOperatename().contains("update")||menuOperate.getOperatename().contains("save")){
+            menuOperate.setType("warning");
+        }else if(menuOperate.getOperatename().contains("info")||menuOperate.getOperatename().contains("list")){
+            menuOperate.setType("success");
+        }else if(menuOperate.getOperatename().contains("delete")){
+            menuOperate.setType("danger");
+        }
+
+
+
     }
 
 }

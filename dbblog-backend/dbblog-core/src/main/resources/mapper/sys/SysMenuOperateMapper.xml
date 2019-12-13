@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.dblearn.blog.mapper.sys.SysMenuOperateMapper">
+    <select id="listMenuOperate" resultType="cn.dblearn.blog.entity.sys.SysMenuOperate">
+		select * from sys_menu_operate where menuid = #{menuid}
+	</select>
+
+	<!--查询最大用户自增值-->
+	<select id="queryMaxId" resultType="java.lang.Integer">
+         SELECT MAX(id) FROM sys_menu_operate
+    </select>
+</mapper>

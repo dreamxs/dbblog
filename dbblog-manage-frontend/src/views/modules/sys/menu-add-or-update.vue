@@ -38,13 +38,14 @@
       <el-form-item v-if="dataForm.type !== 0" label="授权标识" prop="perms">
         <!--<el-input v-model="dataForm.perms" placeholder="多个用逗号分隔, 如: user:list,user:create"></el-input>-->
         <el-tag
-          :key="tag"
-          v-for="tag in dynamicTags"
+          :key="index"
+          v-for="(tag, index) in dynamicTags"
           closable
+          :type="tag.type"
           @click.native="handleTagInput(tag)"
           :disable-transitions="false"
           @close="handleClose(tag)">
-          {{tag}}
+          {{tag.operatename}}
         </el-tag>
         <el-input
           class="input-new-tag"
@@ -116,14 +117,19 @@ export default {
       editmodel: false,
       menupoppervisible: false,
       iconvisible: false,
-      dynamicTags: ['标签一', '标签二', '标签三'],
+      dynamicTags: [],
       inputVisible: false,
       inputValue: '',
       tagValue: '',
+      menuOperate: {
+        operatename: '',
+        type: '',
+        menuid: ''
+      },
       dataForm: {
         id: 0,
         type: 1,
-        typeList: ['目录', '菜单', '按钮'],
+        typeList: ['目录', '菜单'],
         name: '',
         parentId: 0,
         parentName: '',
@@ -157,6 +163,7 @@ export default {
   methods: {
     init (id) {
       this.dataForm.id = id || 0
+      console.log(id)
       this.$http({
         url: this.$http.adornUrl('/admin/sys/menu/select'),
         method: 'get',
@@ -173,6 +180,7 @@ export default {
           // 新增
           this.menuListTreeSetCurrentNode()
         } else {
+          this.menuOperate.menuid = id
           // 修改
           this.$http({
             url: this.$http.adornUrl(`/admin/sys/menu/info/${this.dataForm.id}`),
@@ -187,6 +195,7 @@ export default {
             this.dataForm.perms = data.menu.perms
             this.dataForm.orderNum = data.menu.orderNum
             this.dataForm.icon = data.menu.icon
+            this.dynamicTags = data.menuOperate
             this.menuListTreeSetCurrentNode()
           })
         }
@@ -250,6 +259,16 @@ export default {
               this.$message({
                 message: '操作成功',
                 type: 'success',
+                duration: 1500
+              })
+            } else {
+              this.$message.error(data.msg)
+            }
+          }).then(({data}) => {
+            if (data && data.code === 200) {
+              this.$message({
+                message: '操作成功',
+                type: 'success',
                 duration: 1500,
                 onClose: () => {
                   this.visible = false
@@ -268,10 +287,10 @@ export default {
     },
     handleTagInput (tag) {
       this.$message({
-        message: tag,
+        message: tag.operatename,
         type: 'warning'
       })
-      this.inputValue = tag
+      this.inputValue = tag.operatename
       this.editmodel = true
       this.tagValue = tag
       this.showInput()
@@ -284,10 +303,20 @@ export default {
     },
     handleInputConfirm () {
       let inputValue = this.inputValue
+      this.menuOperate.operatename = inputValue
       if (inputValue && !this.editmodel) {
-        this.dynamicTags.push(inputValue)
+        this.menuOperate.operatename = inputValue
+        this.menuOperate.type = ''
+        this.menuOperate.menuid = this.dataForm.id
+        this.dynamicTags.push(this.menuOperate)
       } else {
-        this.dynamicTags.splice(this.dynamicTags.indexOf(this.tagValue), 1, this.inputValue)
+        let index = 0
+        this.dynamicTags.forEach(item => {
+          index = index + 1
+          if (this.menuOperate.operatename === item.operatename) { // 对象里的唯一标识id
+            this.dynamicTags.splice(this.dynamicTags.indexOf(index), 1, this.menuOperate)
+          }
+        })
       }
       this.editmodel = false
       this.inputVisible = false
