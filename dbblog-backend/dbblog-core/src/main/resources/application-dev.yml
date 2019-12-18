@@ -18,11 +18,18 @@ spring:
       test-while-idle: true
       test-on-borrow: false
       test-on-return: false
+      # WebStatFilter配置
+      web-stat-filter:
+        enabled: true
+          # 添加过滤规则
+        url-pattern: /*
+          # 忽略过滤的格式
+        exclusions: '*.js,*.gif,*.jpg,*.png,*.css,*.ico,/druid/*'
       stat-view-servlet:
         enabled: true
         url-pattern: /druid/*
-        #login-username: admin
-        #login-password: admin
+        login-username: admin
+        login-password: admin
       filter:
         stat:
           log-slow-sql: true

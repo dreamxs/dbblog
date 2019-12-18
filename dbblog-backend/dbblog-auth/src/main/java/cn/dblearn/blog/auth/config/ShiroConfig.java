@@ -1,6 +1,7 @@
 package cn.dblearn.blog.auth.config;
 import cn.dblearn.blog.auth.OAuth2Filter;
 import cn.dblearn.blog.auth.OAuth2Realm;
+import cn.dblearn.blog.common.constants.SysConstants;
 import org.apache.shiro.session.mgt.SessionManager;
 import org.apache.shiro.spring.LifecycleBeanPostProcessor;
 import org.apache.shiro.spring.security.interceptor.AuthorizationAttributeSourceAdvisor;
@@ -136,6 +137,7 @@ public class ShiroConfig {
         filterMap.put("/admin/sys/login", "anon");
         filterMap.put("/admin/sys/register", "anon");
         filterMap.put("/admin/**", "oauth2");
+        filterMap.put("/druid/**", "perms["+ SysConstants.SUPER_REQUIRESPERMISSIONS+"]");
         filterMap.put("/**", "anon");
         shiroFilter.setFilterChainDefinitionMap(filterMap);
 
