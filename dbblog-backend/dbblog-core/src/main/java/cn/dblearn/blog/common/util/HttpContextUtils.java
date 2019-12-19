@@ -1,5 +1,6 @@
 package cn.dblearn.blog.common.util;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
@@ -50,6 +51,30 @@ public class HttpContextUtils {
 	public static String getStrRequest(Map<String, Object> params,String keyword ) {
 		Object obj = params.getOrDefault(keyword,"");
 		return String.valueOf(obj);
+	}
+
+	/**
+	 * 判断是否是Ajax请求
+	 *
+	 * @param request
+	 * @return
+	 */
+	public static boolean isAjax(HttpServletRequest request) {
+		return (request.getHeader("X-Requested-With") != null &&
+				"XMLHttpRequest".equals(request.getHeader("X-Requested-With").toString()));
+	}
+
+	/**
+	 * 获取响应状态码
+	 * @param request
+	 * @return
+	 */
+	private HttpStatus getStatus(HttpServletRequest request) {
+		Integer statusCode = (Integer) request.getAttribute("javax.servlet.error.status_code");
+		if (statusCode == null) {
+			return HttpStatus.INTERNAL_SERVER_ERROR;
+		}
+		return HttpStatus.valueOf(statusCode);
 	}
 
 }

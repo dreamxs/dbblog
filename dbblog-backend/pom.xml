@@ -162,6 +162,12 @@
                 <artifactId>spring-boot-starter-amqp</artifactId>
                 <version>${springboot.version}</version>
             </dependency>
+            <!--解决thymeleaf模板无法热部署问题-->
+            <dependency>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-devtools</artifactId>
+                <optional>true</optional> <!--optional设置为true 才为热部署 -->
+            </dependency>
         </dependencies>
     </dependencyManagement>
 
@@ -172,6 +178,21 @@
                 <plugin>
                     <groupId>org.springframework.boot</groupId>
                     <artifactId>spring-boot-maven-plugin</artifactId>
+                </plugin>
+                <plugin>
+                    <groupId>org.springframework.boot</groupId>
+                    <artifactId>spring-boot-maven-plugin</artifactId>
+                    <configuration>
+                        <fork>true</fork><!-- 如果没有该配置，热部署的devtools不生效 -->
+                    </configuration>
+                </plugin>
+                <!-- 自定义配置spring Boot使用的JDK版本 -->
+                <plugin>
+                    <artifactId>maven-compiler-plugin</artifactId>
+                    <configuration>
+                        <source>1.8</source>
+                        <target>1.8</target>
+                    </configuration>
                 </plugin>
             </plugins>
         </pluginManagement>

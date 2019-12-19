@@ -29,12 +29,38 @@ http.interceptors.request.use(config => {
  * 响应拦截
  */
 http.interceptors.response.use(response => {
-  if (response.data && response.data.code === 403) { // 401 token失效
+  window.console.log(response)
+  let data = response.data
+
+  if (data) { // 401 token失效
+    let code = response.data.code
+    window.console.log(code)
+    if (code === 404) {
+      router.push({ name: '404',
+        params: {
+          msg: data.msg,
+          code: code,
+          path: data.path
+        }})
+    } else if (code === 403) {
+      clearLoginInfo()
+      router.push({ name: 'login' })
+    } else if (data.code === 401 || data.code === 500 || data.code === 501) {
+      window.console.log('跳转到error')
+      router.push({ name: 'error',
+        params: {
+          msg: data.msg,
+          code: code,
+          path: data.path
+        }})
+    }
+  } else {
     clearLoginInfo()
     router.push({ name: 'login' })
   }
   return response
 }, error => {
+  console.log(error)
   return Promise.reject(error)
 })
 

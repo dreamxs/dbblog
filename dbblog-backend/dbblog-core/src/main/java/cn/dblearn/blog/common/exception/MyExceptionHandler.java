@@ -37,27 +37,42 @@ public class MyExceptionHandler {
         return result;
     }
 
+    /**
+     * 未捕捉异常
+     * */
     @ExceptionHandler(NoHandlerFoundException.class)
     public Result handlerNoFoundException(Exception e){
         log.error(e.getMessage(),e);
-        return Result.exception(ErrorEnum.PATH_NOT_FOUND);
+        return Result.exception(ErrorEnum.PATH_NOT_FOUND).put("path",e.toString().replace("org.springframework.web.servlet.NoHandlerFoundException: ",""));
     }
 
+    /**
+     * 重复键值对异常
+     * */
     @ExceptionHandler(DuplicateKeyException.class)
     public Result handleDuplicateKeyException(DuplicateKeyException e){
         log.error(e.getMessage(),e);
         return Result.exception(ErrorEnum.DUPLICATE_KEY);
     }
 
+    /**
+     * 权限异常
+     * */
     @ExceptionHandler(AuthorizationException.class)
     public Result handleAuthorizationException(AuthorizationException e){
         log.error(e.getMessage(),e);
         return Result.exception(ErrorEnum.NO_AUTH);
     }
 
+    /**
+     * 所有异常
+     * */
     @ExceptionHandler(Exception.class)
     public Result handleException(Exception e){
         log.error(e.getMessage(),e);
         return Result.exception();
     }
+
+
+
 }
