@@ -138,9 +138,18 @@ public class ShiroConfig {
         filterMap.put("/admin/sys/register", "anon");
         filterMap.put("/admin/**", "oauth2");
         filterMap.put("/druid/**", "perms["+ SysConstants.SUPER_REQUIRESPERMISSIONS+"]");
+
+        //swagger2 shiro验证权限添加
+        filterMap.put("/swagger-ui.html", "perms["+ SysConstants.SUPER_REQUIRESPERMISSIONS+"]");
+        filterMap.put("/swagger-resources","perms["+ SysConstants.SUPER_REQUIRESPERMISSIONS+"]");
+        filterMap.put("/swagger-resources/configuration/security","perms["+ SysConstants.SUPER_REQUIRESPERMISSIONS+"]");
+        filterMap.put("/swagger-resources/configuration/ui","perms["+ SysConstants.SUPER_REQUIRESPERMISSIONS+"]");
+        filterMap.put("/v2/api-docs", "perms["+ SysConstants.SUPER_REQUIRESPERMISSIONS+"]");
+        filterMap.put("/webjars/springfox-swagger-ui/**", "perms["+ SysConstants.SUPER_REQUIRESPERMISSIONS+"]");
+
         filterMap.put("/**", "anon");
         shiroFilter.setFilterChainDefinitionMap(filterMap);
-
+        shiroFilter.setUnauthorizedUrl("http://localhost:8888/#/401");
         return shiroFilter;
     }
 

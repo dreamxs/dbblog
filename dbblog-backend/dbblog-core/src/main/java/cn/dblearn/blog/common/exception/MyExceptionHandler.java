@@ -70,7 +70,7 @@ public class MyExceptionHandler {
     @ExceptionHandler(Exception.class)
     public Result handleException(Exception e){
         log.error(e.getMessage(),e);
-        return Result.exception();
+        return Result.exception().put("msg",e.toString());
     }
 
 

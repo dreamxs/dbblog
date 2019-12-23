@@ -4,6 +4,13 @@ import http from '@/utils/httpRequest'
 import { isURL } from '@/utils/validate'
 import {clearLoginInfo} from '@/utils'
 
+/**
+ * 重写路由的push方法
+ */
+const routerPush = Router.prototype.push
+Router.prototype.push = function push (location) {
+  return routerPush.call(this, location).catch(error => error)
+}
 Vue.use(Router)
 
 // 开发环境不使用懒加载, 因为懒加载页面太多的话会造成webpack热更新太慢, 所以只有生产环境使用懒加载
@@ -31,6 +38,14 @@ const mainRoutes = {
     // 提示: 如需要通过iframe嵌套展示内容, 但不通过tab打开, 请自行创建组件使用iframe处理!
     { path: '/home', component: _import('common/home'), name: 'home', meta: { title: '首页' } },
     { path: '/theme', component: _import('common/theme'), name: 'theme', meta: { title: '主题' } },
+    { path: '/401',
+      component: _import('common/error/401'),
+      name: '401',
+      meta: {
+        title: '无权限操作',
+        isTab: true
+      }
+    },
     { path: '/article/article/update/:id',
       component: _import('modules/article/article-add-or-update'),
       name: 'article-update',

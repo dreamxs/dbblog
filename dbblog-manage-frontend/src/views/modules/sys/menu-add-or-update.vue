@@ -3,7 +3,8 @@
     :title="!dataForm.id ? '新增' : '修改'"
     :close-on-click-modal="false"
     :visible.sync="visible">
-    <el-form :model="dataForm" :rules="dataRule" ref="dataForm" @keyup.enter.native="dataFormSubmit()" label-width="80px">
+    <el-form :model="dataForm" :rules="dataRule" ref="dataForm" @keyup.enter.native="dataFormSubmit()"
+             label-width="80px">
       <el-form-item label="类型" prop="type">
         <el-radio-group v-model="dataForm.type">
           <el-radio v-for="(type, index) in dataForm.typeList" :label="index" :key="index">{{ type }}</el-radio>
@@ -29,7 +30,8 @@
             :highlight-current="true"
             :expand-on-click-node="false">
           </el-tree>
-          <el-input v-model="dataForm.parentName" slot="reference" :readonly="true" placeholder="点击选择上级菜单" class="menu-list__input"></el-input>
+          <el-input v-model="dataForm.parentName" slot="reference" :readonly="true" placeholder="点击选择上级菜单"
+                    class="menu-list__input"></el-input>
         </el-popover>
       </el-form-item>
       <el-form-item v-if="dataForm.type === 1" label="菜单路由" prop="url">
@@ -42,7 +44,8 @@
           v-for="(tag, index) in dynamicTags"
           closable
           :type="tag.type"
-          @click.native="handleTagInput(tag)"
+          @keyup.enter.native="handleInputConfirm"
+          @click.native="handleTagInput(tag, index)"
           :disable-transitions="false"
           @close="handleClose(tag)">
           {{tag.operatename}}
@@ -53,7 +56,6 @@
           v-model="inputValue"
           ref="saveTagInput"
           size="small"
-          @keyup.enter.native="handleInputConfirm"
           @blur="handleInputConfirm"
           @click="showInput"
         >
@@ -82,11 +84,14 @@
                 </el-button>
               </div>
             </el-popover>
-            <el-input v-model="dataForm.icon" v-popover:iconListPopover :readonly="true" placeholder="菜单图标名称" class="icon-list__input"></el-input>
+            <el-input v-model="dataForm.icon" v-popover:iconListPopover :readonly="true" placeholder="菜单图标名称"
+                      class="icon-list__input"></el-input>
           </el-col>
           <el-col :span="2" class="icon-list__tips">
             <el-tooltip placement="top" effect="light">
-              <div slot="content">全站推荐使用SVG Sprite, 详细请参考:<a href="//github.com/daxiongYang/renren-fast-vue/blob/master/src/icons/index.js" target="_blank">icons/index-dev.js</a>描述</div>
+              <div slot="content">全站推荐使用SVG Sprite, 详细请参考:<a
+                href="//github.com/daxiongYang/renren-fast-vue/blob/master/src/icons/index.js" target="_blank">icons/index-dev.js</a>描述
+              </div>
               <i class="el-icon-warning"></i>
             </el-tooltip>
           </el-col>
@@ -101,8 +106,9 @@
 </template>
 
 <script>
-import { treeDataTranslate } from '@/utils'
+import {treeDataTranslate} from '@/utils'
 import Icon from '@/icons'
+
 export default {
   data () {
     var validateUrl = (rule, value, callback) => {
@@ -121,6 +127,7 @@ export default {
       inputVisible: false,
       inputValue: '',
       tagValue: '',
+      index: -1,
       menuOperate: {
         operatename: '',
         type: '',
@@ -141,13 +148,13 @@ export default {
       },
       dataRule: {
         name: [
-          { required: true, message: '菜单名称不能为空', trigger: 'blur' }
+          {required: true, message: '菜单名称不能为空', trigger: 'blur'}
         ],
         parentName: [
-          { required: true, message: '上级菜单不能为空', trigger: 'change' }
+          {required: true, message: '上级菜单不能为空', trigger: 'change'}
         ],
         url: [
-          { validator: validateUrl, trigger: 'blur' }
+          {validator: validateUrl, trigger: 'blur'}
         ]
       },
       menuList: [],
@@ -163,7 +170,6 @@ export default {
   methods: {
     init (id) {
       this.dataForm.id = id || 0
-      console.log(id)
       this.$http({
         url: this.$http.adornUrl('/admin/sys/menu/select'),
         method: 'get',
@@ -195,7 +201,7 @@ export default {
             this.dataForm.perms = data.menu.perms
             this.dataForm.orderNum = data.menu.orderNum
             this.dataForm.icon = data.menu.icon
-            this.dynamicTags = data.menuOperate
+            this.dynamicTags = JSON.parse(data.menu.perms)
             this.menuListTreeSetCurrentNode()
           })
         }
@@ -250,20 +256,10 @@ export default {
               'name': this.dataForm.name,
               'parentId': this.dataForm.parentId,
               'url': this.dataForm.url,
-              'perms': this.dataForm.perms,
+              'perms': JSON.stringify(this.dynamicTags),
               'orderNum': this.dataForm.orderNum,
               'icon': this.dataForm.icon
             })
-          }).then(({data}) => {
-            if (data && data.code === 200) {
-              this.$message({
-                message: '操作成功',
-                type: 'success',
-                duration: 1500
-              })
-            } else {
-              this.$message.error(data.msg)
-            }
           }).then(({data}) => {
             if (data && data.code === 200) {
               this.$message({
@@ -285,7 +281,7 @@ export default {
     handleClose (tag) {
       this.dynamicTags.splice(this.dynamicTags.indexOf(tag), 1)
     },
-    handleTagInput (tag) {
+    handleTagInput (tag, index) {
       this.$message({
         message: tag.operatename,
         type: 'warning'
@@ -293,6 +289,7 @@ export default {
       this.inputValue = tag.operatename
       this.editmodel = true
       this.tagValue = tag
+      this.index = index
       this.showInput()
     },
     showInput () {
@@ -302,49 +299,69 @@ export default {
       })
     },
     handleInputConfirm () {
-      let inputValue = this.inputValue
-      this.menuOperate.operatename = inputValue
-      if (inputValue && !this.editmodel) {
-        this.menuOperate.operatename = inputValue
-        this.menuOperate.type = ''
-        this.menuOperate.menuid = this.dataForm.id
-        this.dynamicTags.push(this.menuOperate)
+      console.log(this.dynamicTags)
+      console.log(this.index)
+      if (!this.editmodel) {
+        this.initType()
+        if (this.inputValue) {
+          let data = Object.assign({}, JSON.parse(JSON.stringify(this.menuOperate)))
+          this.dynamicTags.push(data)
+        }
       } else {
-        let index = 0
-        this.dynamicTags.forEach(item => {
-          index = index + 1
-          if (this.menuOperate.operatename === item.operatename) { // 对象里的唯一标识id
-            this.dynamicTags.splice(this.dynamicTags.indexOf(index), 1, this.menuOperate)
-          }
-        })
+        this.initType()
+        //  this.menuOperate.operatename = inputValue this.dynamicTags.splice(this.dynamicTags.indexOf(this.tagValue), 1, this.menuOperate)
+        if (this.inputValue && this.inputValue !== this.tagValue.operatename) {
+          this.dynamicTags[this.index].operatename = this.menuOperate.operatename
+          this.dynamicTags[this.index].type = this.menuOperate.type
+        }
+        // 并不能更新数据 Vue.set(this.dynamicTags, this.index, this.menuOperate)
       }
+      console.log(this.dynamicTags)
       this.editmodel = false
       this.inputVisible = false
       this.inputValue = ''
-      this.tagValue = ''
+      this.index = -1
+      this.tagValue = null
+    },
+    initType () {
+      this.menuOperate.operatename = this.inputValue
+      this.menuOperate.type = ''
+      this.menuOperate.menuid = this.dataForm.id
+      if (this.menuOperate.operatename.indexOf('update') > 0 || this.menuOperate.operatename.indexOf('update') > 0) {
+        this.menuOperate.type = 'warning'
+      } else if (this.menuOperate.operatename.indexOf('info') > 0 || this.menuOperate.operatename.indexOf('list') > 0) {
+        this.menuOperate.type = 'success'
+      } else if (this.menuOperate.operatename.indexOf('delete') > 0) {
+        this.menuOperate.type = 'danger'
+      }
     }
   }
 }
+
 </script>
 
 <style lang="scss">
   .mod-menu {
     .menu-list__input,
     .icon-list__input {
-       > .el-input__inner {
+      > .el-input__inner {
         cursor: pointer;
       }
     }
+
     &__icon-popover {
       max-width: 370px;
     }
+
     &__icon-list {
       max-height: 180px;
       padding: 0;
       margin: -8px 0 0 -8px;
+
       > .el-button {
         padding: 8px;
         margin: 8px 0 0 8px;
+
         > span {
           display: inline-block;
           vertical-align: middle;
@@ -354,6 +371,7 @@ export default {
         }
       }
     }
+
     .icon-list__tips {
       font-size: 18px;
       text-align: center;
@@ -361,9 +379,11 @@ export default {
       cursor: pointer;
     }
   }
+
   .el-tag + .el-tag {
     margin-left: 10px;
   }
+
   .button-new-tag {
     margin-left: 10px;
     height: 32px;
@@ -371,6 +391,7 @@ export default {
     padding-top: 0;
     padding-bottom: 0;
   }
+
   .input-new-tag {
     width: 90px;
     margin-left: 10px;
