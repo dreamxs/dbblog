@@ -201,7 +201,11 @@ export default {
             this.dataForm.perms = data.menu.perms
             this.dataForm.orderNum = data.menu.orderNum
             this.dataForm.icon = data.menu.icon
-            this.dynamicTags = JSON.parse(data.menu.perms)
+            if (data.menu.perms) {
+              this.dynamicTags = JSON.parse(data.menu.perms)
+            } else {
+              this.dynamicTags = []
+            }
             this.menuListTreeSetCurrentNode()
           })
         }
@@ -299,8 +303,8 @@ export default {
       })
     },
     handleInputConfirm () {
-      console.log(this.dynamicTags)
-      console.log(this.index)
+      // console.log(this.dynamicTags)
+      // console.log(this.index)
       if (!this.editmodel) {
         this.initType()
         if (this.inputValue) {
@@ -316,7 +320,7 @@ export default {
         }
         // 并不能更新数据 Vue.set(this.dynamicTags, this.index, this.menuOperate)
       }
-      console.log(this.dynamicTags)
+      // console.log(this.dynamicTags)
       this.editmodel = false
       this.inputVisible = false
       this.inputValue = ''

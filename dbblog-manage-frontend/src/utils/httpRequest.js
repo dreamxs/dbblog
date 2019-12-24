@@ -29,12 +29,11 @@ http.interceptors.request.use(config => {
  * 响应拦截
  */
 http.interceptors.response.use(response => {
-  window.console.log(response)
+  // window.console.log(response)
   let data = response.data
-
   if (data) { // 401 token失效
     let code = response.data.code
-    window.console.log(code)
+    // window.console.log(code)
     if (code === 404) {
       router.push({ name: '404',
         params: {
@@ -46,7 +45,7 @@ http.interceptors.response.use(response => {
       clearLoginInfo()
       router.push({ name: 'login' })
     } else if (data.code === 401 || data.code === 500 || data.code === 501) {
-      window.console.log('跳转到error')
+      // window.console.log('跳转到error')
       router.push({ name: 'error',
         params: {
           msg: data.msg,
@@ -60,7 +59,7 @@ http.interceptors.response.use(response => {
   }
   return response
 }, error => {
-  console.log(error)
+  // console.log(error)
   return Promise.reject(error)
 })
 

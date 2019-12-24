@@ -64,7 +64,7 @@ export default {
   },
   methods: {
     init (id) {
-      console.log(id)
+      // console.log(id)
       this.dataForm.id = (id === -1 || !id) ? '' : id
       this.visible = true
       this.$nextTick(() => {

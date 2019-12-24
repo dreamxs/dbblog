@@ -58,7 +58,7 @@
               </table-tree-column>
               <el-table-column
                 header-align="center"
-                width="60"
+                width="50"
                 align="center"
                 label="图标">
                 <template slot-scope="scope">
@@ -67,7 +67,7 @@
               </el-table-column>
               <el-table-column
                 prop="type"
-                width="80"
+                width="70"
                 header-align="center"
                 align="center"
                 label="类型">
@@ -79,7 +79,7 @@
               </el-table-column>
               <el-table-column
                 prop="orderNum"
-                width="80"
+                width="70"
                 header-align="center"
                 align="center"
                 label="排序号">
@@ -88,15 +88,32 @@
                 prop="url"
                 header-align="center"
                 align="center"
+                width="200"
                 :show-overflow-tooltip="true"
                 label="菜单URL">
               </el-table-column>
-              <el-table-column
+              <!--<el-table-column
                 prop="perms"
                 header-align="center"
                 align="center"
                 :show-overflow-tooltip="true"
                 label="授权标识">
+              </el-table-column>-->
+              <el-table-column
+                header-align="center"
+                align="center"
+                :show-overflow-tooltip="true"
+                label="授权标识">
+                <template slot-scope="scope">
+                  <el-tag
+                    :key="index"
+                    v-for="(tag, index) in scope.row.permsObject"
+                    :type="tag.type"
+                    :disable-transitions="false"
+                  >
+                    {{tag.operatename}}
+                  </el-tag>
+                </template>
               </el-table-column>
               <el-table-column
                 fixed="right"
@@ -164,6 +181,12 @@ export default {
           'roleName': this.dataForm.roleName
         })
       }).then(({data}) => {
+        data.forEach(row => {
+          if (row.perms) {
+            row.permsObject = JSON.parse(row.perms)
+          }
+        })
+        // console.log(data)
         this.dataList = data
         this.dataListLoading = false
       })
@@ -222,7 +245,7 @@ export default {
     // 菜单树选中
     menuListTreeCurrentChangeHandle (data, node) {
       this.menuParentId = data.menuId
-      console.log(this.menuParentId)
+      // console.log(this.menuParentId)
       this.refreshData()
     }
   }
