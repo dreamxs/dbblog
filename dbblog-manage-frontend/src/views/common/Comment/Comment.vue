@@ -2,7 +2,7 @@
   <div class="hbl-fa">
     <div class="hbl-comm">
       <div class="comment-avatar" v-if="showAvatar">
-        <avatar :avatar="avatar"></avatar>
+        <avatar :userImg="avatarImg" :userName="commentinfo.commentUserimg"></avatar>
       </div>
       <div class="comment" :style="{width:commentWidth}">
         <el-input
@@ -47,7 +47,7 @@
       </div>
       <div class="content">
         <div class="comment-f">
-          <avatar :avatar="item.commentUser.avatar?item.commentUser.avatar:avatar"></avatar>
+          <avatar :userImg="item.commentUser.avatar?item.commentUser.avatar:avatar"></avatar>
         </div>
 
         <div class="comment-f">
@@ -112,7 +112,7 @@
         </div>
         <div class="content">
           <div class="comment-f">
-            <avatar :avatar="ritem.commentUser.avatar?ritem.commentUser.avatar:avatar"></avatar>
+            <avatar :userImg="ritem.commentUser.avatar?ritem.commentUser.avatar:avatar"></avatar>
           </div>
 
           <div class="comment-f">
@@ -198,9 +198,13 @@ export default {
       type: Boolean,
       default: true
     },
-    avatar: {
+    avatarImg: {
       type: String,
-      default: ''
+      default: require('./img/icon/avatar.jpg')
+    },
+    articleid: {
+      type: Number,
+      default: -1
     },
     placeholder: {
       type: String,
@@ -234,7 +238,7 @@ export default {
           commentUser: {
             id: 1,
             nickName: '花非花',
-            avatar: 'http://qzapp.qlogo.cn/qzapp/101483738/6637A2B6611592A44A7699D14E13F7F7/50'
+            avatar: require('./img/icon/avatar2.jpg')
           },
           content: '<a style=\'text-decoration:none;color: #409eff \' href=\'https://blog.csdn.net/abcwanglinyong/\'>我的CSDN博客地址</a>[害羞][害羞][害羞]<br/>' +
             '我的微信公众号：<br/>' +
@@ -246,10 +250,25 @@ export default {
               commentUser: {
                 id: 2,
                 nickName: '坏菠萝',
-                avatar: ''
+                avatar: require('./img/icon/avatar.jpg')
               },
               targetUser: {
-                id: 1,
+                id: 2,
+                nickName: '花非花',
+                avatar: 'http://qzapp.qlogo.cn/qzapp/101483738/6637A2B6611592A44A7699D14E13F7F7/50'
+              },
+              content: '真的就很棒！很Nice!',
+              createDate: '2019-9-23 17:45:26'
+            },
+            {
+              id: 3,
+              commentUser: {
+                id: 2,
+                nickName: '坏菠萝',
+                avatar: require('./img/icon/avatar.jpg')
+              },
+              targetUser: {
+                id: 2,
                 nickName: '花非花',
                 avatar: 'http://qzapp.qlogo.cn/qzapp/101483738/6637A2B6611592A44A7699D14E13F7F7/50'
               },
@@ -269,6 +288,17 @@ export default {
   },
   data () {
     return {
+      commentinfo: {
+        commentUserid: this.$cookie.get('userId'),
+        commentUsername: this.$cookie.get('userName'),
+        commentUserimg: this.$cookie.get('userImg'),
+        praiseCount: '',
+        comment: '',
+        targetCommentid: -1,
+        targetUsername: '',
+        targetUserimg: '',
+        isreply: ''
+      },
       replyMap: [],
       buttonMap: [],
       pBodyMap: [],
@@ -414,6 +444,17 @@ export default {
 
     pBodyStatus (index) {
       this.$set(this.pBodyMap, index, !this.pBodyMap[index])
+    },
+
+    init () {
+      // 获取笔记分类
+      this.$http({
+        url: this.$http.adornUrl('/admin/operation/category/list'),
+        method: 'get',
+        params: this.$http.adornParams({type: 1})
+      }).then(({data}) => {
+
+      })
     }
 
   },
@@ -425,7 +466,7 @@ export default {
 
   },
   mounted () { // 页面加载完成后
-
+    this.commentinfo.commentUserid = ''
   }
 
 }

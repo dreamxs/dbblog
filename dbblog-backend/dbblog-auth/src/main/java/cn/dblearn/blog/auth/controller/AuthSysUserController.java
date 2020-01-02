@@ -11,6 +11,9 @@ import cn.dblearn.blog.entity.sys.form.SysUserRegisterForm;
 import cn.dblearn.blog.mapper.sys.SysUserMapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.IOUtils;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiModel;
+import io.swagger.annotations.ApiOperation;
 import org.apache.shiro.crypto.hash.Sha256Hash;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -34,6 +37,8 @@ import java.util.UUID;
  * @email 571002217@qq.com
  * @description
  */
+@Api
+@ApiModel(value = "SysLoginForm")
 @RestController
 public class AuthSysUserController extends AbstractController {
 
@@ -46,6 +51,7 @@ public class AuthSysUserController extends AbstractController {
     @Autowired
     private SysUserTokenService sysUserTokenService;
 
+    @ApiOperation(value = "返回验证码图片")
     @GetMapping("captcha.jpg")
     public void captcha(HttpServletResponse response, String uuid) throws IOException {
         response.setHeader("Cache-Control", "no-store, no-cache");
@@ -59,9 +65,11 @@ public class AuthSysUserController extends AbstractController {
         IOUtils.closeQuietly(out);
     }
 
+
     @PostMapping("/admin/sys/login")
     public Result login(@RequestBody SysLoginForm form) {
         boolean captcha = sysCaptchaService.validate(form.getUuid(), form.getCaptcha());
+      // int a= 5/0;
         if (!captcha) {
             // 验证码不正确
             return Result.error(ErrorEnum.CAPTCHA_WRONG);
@@ -80,7 +88,7 @@ public class AuthSysUserController extends AbstractController {
         }
 
         //生成token，并保存到redis
-        return sysUserTokenService.createToken(user.getUserId());
+        return sysUserTokenService.createToken(user.getUserId()).put("userId",user.getUserId()).put("userImg",user.getUserimg()).put("userName",user.getUsername());
     }
 
     @PostMapping("/admin/sys/register")

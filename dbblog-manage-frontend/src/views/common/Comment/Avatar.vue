@@ -1,20 +1,27 @@
 <template>
   <div class="user">
-    <div class="user-img"><img :src="avatar?avatar:require('./img/icon/avatar.jpg')"/></div>
+    <div class="user-img"><img  :src="userImg?userImg:require('./img/icon/avatar.jpg')" :alt="userName"/></div>
   </div>
 </template>
 
 <script>
 export default {
   props: {
-    avatar: {
+    userId: {
+      type: Number,
+      default: 1
+    },
+    userImg: {
       type: String,
-      default: ''
+      default: ' '
+    },
+    userName: {
+      type: String,
+      default: '游客'
     }
   },
   data () {
     return {
-      comment: ''
     }
   }
 

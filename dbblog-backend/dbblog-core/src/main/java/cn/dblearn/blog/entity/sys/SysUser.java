@@ -50,6 +50,9 @@ public class SysUser implements Serializable {
     @ApiModelProperty(value = "密码盐")
     private String salt;
 
+    @ApiModelProperty(value = "用户头像地址")
+    private String userimg;
+
     @ApiModelProperty(value = "创建者Id")
     private Integer createUserId;
 
