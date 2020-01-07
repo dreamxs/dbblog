@@ -34,7 +34,9 @@
         <el-menu-item class="site-navbar__avatar" index="3">
           <el-dropdown :show-timeout="0" placement="bottom">
             <span class="el-dropdown-link">
-              <img src="~@/assets/img/avatar.jpeg" :alt="userName">{{ userName }}
+              <img src="~@/assets/img/avatar.jpeg"/>
+              <Avatar username="xsping" src="https://avatar-static.segmentfault.com/133/658/1336582159-5960866d44bce_big64"></Avatar>
+              <Avatar username="xsping" src=""></Avatar>
             </span>
             <el-dropdown-menu slot="dropdown">
               <el-dropdown-item @click.native="updatePasswordHandle()">修改密码</el-dropdown-item>
@@ -52,6 +54,8 @@
 <script>
 import UpdatePassword from './main-navbar-update-password'
 import { clearLoginInfo } from '@/utils'
+import Avatar from 'vue-avatar'
+
 export default {
   data () {
     return {
@@ -59,7 +63,8 @@ export default {
     }
   },
   components: {
-    UpdatePassword
+    UpdatePassword,
+    Avatar
   },
   computed: {
     navbarLayoutType: {

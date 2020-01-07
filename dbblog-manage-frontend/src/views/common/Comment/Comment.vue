@@ -2,7 +2,7 @@
   <div class="hbl-fa">
     <div class="hbl-comm">
       <div class="comment-avatar" v-if="showAvatar">
-        <avatar :userImg="avatarImg" :userName="commentinfo.commentUserimg"></avatar>
+        <avatar username="commentinfo.userName" ></avatar>
       </div>
       <div class="comment" :style="{width:commentWidth}">
         <el-input
@@ -47,7 +47,7 @@
       </div>
       <div class="content">
         <div class="comment-f">
-          <avatar :userImg="item.commentUser.avatar?item.commentUser.avatar:avatar"></avatar>
+          <avatar username="item.commentUser.username?item.commentUser.username:avatar" :alt="item.commentUser.username"></avatar>
         </div>
 
         <div class="comment-f">
@@ -55,7 +55,7 @@
             <div class="nickname author">
               {{item.commentUser.nickName}}
             </div>
-            <div v-if="item.commentUser.id===authorId" class="icon author">{{label}}</div>
+            <div  class="icon author">{{item.commentUser.label}}</div>
             <div class="date">
               {{item.createDate}}
             </div>
@@ -67,7 +67,7 @@
         <div class="reply-content reply-fa">
           <div class="reply-font" @click="doReply(item.id)">
             <div>
-              <img src="./img/icon/reply.png" class="icon-reply"><font class="icon-reply icon-hf">回复</font>
+              <img src="./img/icon/reply.png" class="icon-reply"><span class="icon-reply icon-hf">回复</span>
             </div>
 
           </div>
@@ -112,7 +112,7 @@
         </div>
         <div class="content">
           <div class="comment-f">
-            <avatar :userImg="ritem.commentUser.avatar?ritem.commentUser.avatar:avatar"></avatar>
+            <avatar username="ritem.commentUser.userName?ritem.commentUser.userName"></avatar>
           </div>
 
           <div class="comment-f">
@@ -186,7 +186,7 @@
 </template>
 
 <script>
-import avatar from './Avatar.vue'
+import avatar from 'vue-avatar'
 
 export default {
   props: {
@@ -204,11 +204,11 @@ export default {
     },
     articleid: {
       type: Number,
-      default: -1
+      default: 1
     },
     placeholder: {
       type: String,
-      default: '在此输入评论内容...'
+      default: '请遵守互联网相关法律法规,文明留言评论...'
     },
     minRows: {
       type: Number,
@@ -218,67 +218,9 @@ export default {
       type: Number,
       default: 8
     },
-    commentNum: {
-      type: Number,
-      default: 2
-    },
     authorId: {
       type: Number,
       default: 1
-    },
-    label: {
-      type: String,
-      default: '作者'
-    },
-    commentList: {
-      type: Array,
-      default: () => [
-        {
-          id: 1,
-          commentUser: {
-            id: 1,
-            nickName: '花非花',
-            avatar: require('./img/icon/avatar2.jpg')
-          },
-          content: '<a style=\'text-decoration:none;color: #409eff \' href=\'https://blog.csdn.net/abcwanglinyong/\'>我的CSDN博客地址</a>[害羞][害羞][害羞]<br/>' +
-            '我的微信公众号：<br/>' +
-            '<img src=' + require('./img/hbl.jpg') + '>',
-          createDate: '2019-9-23 17:36:02',
-          childrenList: [
-            {
-              id: 2,
-              commentUser: {
-                id: 2,
-                nickName: '坏菠萝',
-                avatar: require('./img/icon/avatar.jpg')
-              },
-              targetUser: {
-                id: 2,
-                nickName: '花非花',
-                avatar: 'http://qzapp.qlogo.cn/qzapp/101483738/6637A2B6611592A44A7699D14E13F7F7/50'
-              },
-              content: '真的就很棒！很Nice!',
-              createDate: '2019-9-23 17:45:26'
-            },
-            {
-              id: 3,
-              commentUser: {
-                id: 2,
-                nickName: '坏菠萝',
-                avatar: require('./img/icon/avatar.jpg')
-              },
-              targetUser: {
-                id: 2,
-                nickName: '花非花',
-                avatar: 'http://qzapp.qlogo.cn/qzapp/101483738/6637A2B6611592A44A7699D14E13F7F7/50'
-              },
-              content: '真的就很棒！很Nice!',
-              createDate: '2019-9-23 17:45:26'
-            }
-
-          ]
-        }
-      ]
     },
     commentWidth: {
       type: String,
@@ -288,6 +230,9 @@ export default {
   },
   data () {
     return {
+      commentNum: 0,
+      label: '',
+      commentList: [],
       commentinfo: {
         commentUserid: this.$cookie.get('userId'),
         commentUsername: this.$cookie.get('userName'),
@@ -449,11 +394,14 @@ export default {
     init () {
       // 获取笔记分类
       this.$http({
-        url: this.$http.adornUrl('/admin/operation/category/list'),
+        url: this.$http.adornUrl('/comment/arcticComment/' + this.articleid),
         method: 'get',
-        params: this.$http.adornParams({type: 1})
+        params: this.$http.adornParams()
       }).then(({data}) => {
-
+        if (data && data.code === 200) {
+          this.commentNum = data.commentNum
+          this.commentList = data.commentList
+        }
       })
     }
 
@@ -463,7 +411,7 @@ export default {
     // '$route':'routeChange'
   },
   created () { // 生命周期函数
-
+    this.init()
   },
   mounted () { // 页面加载完成后
     this.commentinfo.commentUserid = ''

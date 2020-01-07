@@ -76,4 +76,7 @@ public class Article extends BaseEntity implements Serializable {
     @ApiModelProperty(value = "格式化后的内容")
     private String contentFormat;
 
+    @ApiModelProperty(value = "用戶id")
+    private int userid;
+
 }
