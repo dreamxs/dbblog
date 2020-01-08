@@ -1,10 +1,10 @@
 <template>
-  <div class="hbl-fa">
+  <div class="hbl-fa" :style="{width:commentWidth}">
     <div class="hbl-comm">
       <div class="comment-avatar" v-if="showAvatar">
-        <avatar username="commentinfo.userName" ></avatar>
+        <avatar :src="this.$cookie.get('userImg')" :username="this.$cookie.get('userName')" :size="40" ></avatar>
       </div>
-      <div class="comment" :style="{width:commentWidth}">
+      <div class="comment" style="width:94%">
         <el-input
           @focus="showButton(0)"
           type="textarea"
@@ -14,12 +14,12 @@
         </el-input>
 
         <div v-if="buttonMap[0]" class="hbl-owo">
-          <div :class="pBodyMap[0]?'OwO':'OwO OwO-open'" class="emoj publish" :style="{width:emojiWidth}">
+          <div :class="pBodyMap[0]?'OwO':'OwO OwO-open'" class="emoj publish" :style="{width:emojiWidth+'px'}">
             <div class="OwO-logo" @click="pBodyStatus(0)">
               <span>Emoji表情</span>
             </div>
-            <div class="OwO-body">
-              <ul class="OwO-items OwO-items-show">
+            <div class="OwO-body" :style="{width:emojiWidth+'px'}">
+              <ul class="OwO-items OwO-items-show" :style="{width:emojiWidth+20+'px'}">
                 <li class="OwO-item" v-for="(oitem,index) in OwOlist" :key="'oitem'+index"
                     @click="choseEmoji(0,oitem.title)">
                   <img :src="require('./img/face/'+oitem.url)" alt="">
@@ -42,12 +42,12 @@
       <div class="su com-rep"></div>
       <div class="com-rep com-title">评论<span class="com-span">({{commentNum}})</span></div>
     </div>
-    <div v-for="(item) in commentList" :key="item.id" class="hbl-child">
+    <div v-for="(item) in commentList" :key="item.id" class="hbl-child" >
       <div class="reply">
       </div>
-      <div class="content">
+      <div class="content" >
         <div class="comment-f">
-          <avatar username="item.commentUser.username?item.commentUser.username:avatar" :alt="item.commentUser.username"></avatar>
+          <avatar :src="item.commentUser.avatar?item.commentUser.avatar:''" :username="item.commentUser.nickName" :size="36" ></avatar>
         </div>
 
         <div class="comment-f">
@@ -72,7 +72,7 @@
 
           </div>
 
-          <div class="comment" :style="{width:commentWidth}" v-if="replyMap[item.id]" :showAvatar="showAvatar">
+          <div class="comment"  v-if="replyMap[item.id]" :showAvatar="showAvatar">
             <el-input
               @focus="showButton(item.id)"
               type="textarea"
@@ -82,12 +82,12 @@
             </el-input>
 
             <div v-if="buttonMap[item.id]" class="hbl-owo">
-              <div :class="pBodyMap[item.id]?'OwO':'OwO OwO-open'" class="emoj publish" :style="{width:emojiWidth}">
+              <div :class="pBodyMap[item.id]?'OwO':'OwO OwO-open'" class="emoj publish" :style="{width:emojiWidth-20+'px'}">
                 <div class="OwO-logo" @click="pBodyStatus(item.id)">
                   <span>Emoji表情</span>
                 </div>
-                <div class="OwO-body">
-                  <ul class="OwO-items OwO-items-show">
+                <div class="OwO-body" :style="{width:emojiWidth+'px'}">
+                  <ul class="OwO-items OwO-items-show" :style="{width:emojiWidth+20+'px'}">
                     <li class="OwO-item" v-for="(oitem,index) in OwOlist" :key="'oitem'+index"
                         @click="choseEmoji(item.id,oitem.title)">
                       <img :src="require('./img/face/'+oitem.url)" alt="">
@@ -107,12 +107,12 @@
         </div>
 
       </div>
-      <div class="children" v-for="(ritem) in item.childrenList" :key="ritem.id">
+      <div class="children"  v-for="(ritem) in item.childrenList" :key="ritem.id">
         <div class="reply">
         </div>
-        <div class="content">
+        <div class="content" >
           <div class="comment-f">
-            <avatar username="ritem.commentUser.userName?ritem.commentUser.userName"></avatar>
+            <avatar :src="ritem.commentUser.avatar?ritem.commentUser.avatar:'' " :username="ritem.commentUser.nickName" :size="32"></avatar>
           </div>
 
           <div class="comment-f">
@@ -144,7 +144,7 @@
 
             </div>
 
-            <div class="comment" :style="{width:commentWidth}" v-if="replyMap[ritem.id]" :showAvatar="showAvatar">
+            <div class="comment"  v-if="replyMap[ritem.id]" :showAvatar="showAvatar">
               <el-input
                 @focus="showButton(ritem.id)"
                 type="textarea"
@@ -154,12 +154,12 @@
               </el-input>
 
               <div v-if="buttonMap[ritem.id]" class="hbl-owo">
-                <div :class="pBodyMap[ritem.id]?'OwO':'OwO OwO-open'" class="emoj publish" :style="{width:emojiWidth}">
+                <div :class="pBodyMap[ritem.id]?'OwO':'OwO OwO-open'" class="emoj publish" :style="{width:emojiWidth-20+'px'}">
                   <div class="OwO-logo" @click="pBodyStatus(ritem.id)">
                     <span>Emoji表情</span>
                   </div>
-                  <div class="OwO-body">
-                    <ul class="OwO-items OwO-items-show">
+                  <div class="OwO-body" :style="{width:emojiWidth+'px'}">
+                    <ul class="OwO-items OwO-items-show" :style="{width:emojiWidth+20+'px'}">
                       <li class="OwO-item" v-for="(oitem,index) in OwOlist" :key="'oitem'+index"
                           @click="choseEmoji(ritem.id,oitem.title)">
                         <img :src="require('./img/face/'+oitem.url)" alt="">
@@ -191,8 +191,8 @@ import avatar from 'vue-avatar'
 export default {
   props: {
     emojiWidth: {
-      type: String,
-      default: '560px'
+      type: Number,
+      default: 480
     },
     showAvatar: {
       type: Boolean,
@@ -224,7 +224,7 @@ export default {
     },
     commentWidth: {
       type: String,
-      default: '80%'
+      default: '50%'
     }
 
   },
@@ -525,6 +525,7 @@ export default {
     border: 1px solid #ddd;
     z-index: 1;
     top: 29px;
+    overflow: hidden;
     border-radius: 0 4px 4px 4px;
     display: none;
   }
@@ -547,7 +548,9 @@ export default {
     max-height: 197px;
     overflow: scroll;
     font-size: 0;
-    padding: 10px;
+    padding: 6px 0px 0px 9px;
+    overflow-y: auto;
+    overflow-x: hidden;
     z-index: 1
   }
 

@@ -33,11 +33,7 @@
         <!--</el-submenu>-->
         <el-menu-item class="site-navbar__avatar" index="3">
           <el-dropdown :show-timeout="0" placement="bottom">
-            <span class="el-dropdown-link">
-              <img src="~@/assets/img/avatar.jpeg"/>
-              <Avatar username="xsping" src="https://avatar-static.segmentfault.com/133/658/1336582159-5960866d44bce_big64"></Avatar>
-              <Avatar username="xsping" src=""></Avatar>
-            </span>
+            <Avatar username="xsping" :src="this.userImg" :size="36" style="vertical-align:middle;"></Avatar>
             <el-dropdown-menu slot="dropdown">
               <el-dropdown-item @click.native="updatePasswordHandle()">修改密码</el-dropdown-item>
               <el-dropdown-item @click.native="logoutHandle()">退出</el-dropdown-item>
@@ -80,6 +76,9 @@ export default {
     },
     userName: {
       get () { return this.$store.state.user.name }
+    },
+    userImg: {
+      get () { return this.$cookie.get('userImg') }
     }
   },
   methods: {
