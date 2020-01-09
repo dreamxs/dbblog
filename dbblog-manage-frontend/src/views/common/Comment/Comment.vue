@@ -4,7 +4,7 @@
       <div class="comment-avatar" v-if="showAvatar">
         <avatar :src="this.$cookie.get('userImg')" :username="this.$cookie.get('userName')" :size="40" ></avatar>
       </div>
-      <div class="comment" style="width:94%">
+      <div class="comment" style="width:95%">
         <el-input
           @focus="showButton(0)"
           type="textarea"
@@ -67,12 +67,12 @@
         <div class="reply-content reply-fa">
           <div class="reply-font" @click="doReply(item.id)">
             <div>
-              <img src="./img/icon/reply.png" class="icon-reply"><span class="icon-reply icon-hf">回复</span>
+              <img src="./img/reply.png" class="icon-reply"><span class="icon-reply icon-hf">回复</span>
             </div>
 
           </div>
 
-          <div class="comment"  v-if="replyMap[item.id]" :showAvatar="showAvatar">
+          <div class="comment"  style="width:100%" v-if="replyMap[item.id]" :showAvatar="showAvatar">
             <el-input
               @focus="showButton(item.id)"
               type="textarea"
@@ -139,12 +139,12 @@
           <div class="reply-content reply-fa">
             <div class="reply-font" @click="doReply(ritem.id)">
               <div>
-                <img src="./img/icon/reply.png" class="icon-reply"><font class="icon-reply icon-hf">回复</font>
+                <img src="./img/reply.png" class="icon-reply"><font class="icon-reply icon-hf">回复</font>
               </div>
 
             </div>
 
-            <div class="comment"  v-if="replyMap[ritem.id]" :showAvatar="showAvatar">
+            <div class="comment" style="width:100%"  v-if="replyMap[ritem.id]" :showAvatar="showAvatar">
               <el-input
                 @focus="showButton(ritem.id)"
                 type="textarea"
@@ -198,10 +198,6 @@ export default {
       type: Boolean,
       default: true
     },
-    avatarImg: {
-      type: String,
-      default: require('./img/icon/avatar.jpg')
-    },
     articleid: {
       type: Number,
       default: 1
@@ -224,7 +220,7 @@ export default {
     },
     commentWidth: {
       type: String,
-      default: '50%'
+      default: '100%'
     }
 
   },
@@ -1145,7 +1141,7 @@ export default {
   }
 
   .hbl-comm {
-    padding: 40px;
+    padding: 20px;
   }
 
   .reply {
@@ -1191,6 +1187,10 @@ export default {
     font-size: 15px;
     line-height: 25px;
     margin-left: 56px;
+  }
+
+  .reply-content .el-textarea {
+    width: 100%;
   }
 
   .reply-fa {
