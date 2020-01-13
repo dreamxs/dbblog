@@ -1,9 +1,11 @@
 <template>
+  <!--评论框主体-->
   <div class="hbl-fa" :style="{width:commentWidth}">
     <div class="hbl-comm">
       <div class="comment-avatar" v-if="showAvatar">
         <avatar :src="this.$cookie.get('userImg')" :username="this.$cookie.get('userName')" :size="40" ></avatar>
       </div>
+      <!--顶部评论框-->
       <div class="comment" style="width:95%">
         <el-input
           @focus="showButton(0)"
@@ -12,7 +14,7 @@
           :placeholder=placeholder
           v-model="textareaMap[0]">
         </el-input>
-
+        <!--表情框-->
         <div v-if="buttonMap[0]" class="hbl-owo">
           <div :class="pBodyMap[0]?'OwO':'OwO OwO-open'" class="emoj publish" :style="{width:emojiWidth+'px'}">
             <div class="OwO-logo" @click="pBodyStatus(0)">
@@ -25,53 +27,61 @@
                   <img :src="require('./img/face/'+oitem.url)" alt="">
                 </li>
               </ul>
-
             </div>
           </div>
-
+          <!--按钮组-->
           <div class="publish publish-btn">
             <button class="btn" @click="doSend()">发送</button>
             <button @click="cancel(0)" class="btn btn-cancel">取消</button>
           </div>
         </div>
-
       </div>
     </div>
-
+    <!--评论数-->
     <div class="comm">
       <div class="su com-rep"></div>
       <div class="com-rep com-title">评论<span class="com-span">({{commentNum}})</span></div>
     </div>
+    <!--评论list-->
     <div v-for="(item) in commentList" :key="item.id" class="hbl-child" >
       <div class="reply">
       </div>
+      <!--评论内容-->
       <div class="content" >
+        <!--评论者头像-->
         <div class="comment-f">
-          <avatar :src="item.commentUser.avatar?item.commentUser.avatar:''" :username="item.commentUser.nickName" :size="36" ></avatar>
+          <avatar :src="item.commentUser.avatar?item.commentUser.avatar:''" :username="item.commentUser.nickName" :size="37" ></avatar>
         </div>
-
+        <!--评论信息-->
         <div class="comment-f">
           <div>
-            <div class="nickname author">
+            <div class="nickname author" :id="item.id">
               {{item.commentUser.nickName}}
             </div>
             <div  class="icon author">{{item.commentUser.label}}</div>
             <div class="date">
               {{item.createDate}}
             </div>
-
           </div>
         </div>
-
+        <!--评论内容-->
         <div class="reply-content" v-html="analyzeEmoji(item.content)">{{analyzeEmoji(item.content)}}</div>
+        <!--回复组件-->
         <div class="reply-content reply-fa">
-          <div class="reply-font" @click="doReply(item.id)">
-            <div>
-              <img src="./img/reply.png" class="icon-reply"><span class="icon-reply icon-hf">回复</span>
+          <div class="reply-font" >
+            <div class="iconsvg" @click="doReply(item.id)">
+              <icon-svg name="message" class-name="icon-message"  />
+              <span class="iconnum"></span>
             </div>
-
+            <div class="iconsvg" @click="doReply(item.id)">
+              <icon-svg name="like" class-name="icon-like"  />
+              <span class="iconnum" >{{item.praiseCount}}</span>
+            </div>
+            <div class="iconsvg" @click="doReply(item.id)">
+              <icon-svg name="notlike" class-name="icon-notlike"  />
+              <span v-if="item.praiseCount < 0" class="iconnum">{{item.praiseCount}}</span>
+            </div>
           </div>
-
           <div class="comment"  style="width:100%" v-if="replyMap[item.id]" :showAvatar="showAvatar">
             <el-input
               @focus="showButton(item.id)"
@@ -80,7 +90,6 @@
               :placeholder=placeholder
               v-model="textareaMap[item.id]">
             </el-input>
-
             <div v-if="buttonMap[item.id]" class="hbl-owo">
               <div :class="pBodyMap[item.id]?'OwO':'OwO OwO-open'" class="emoj publish" :style="{width:emojiWidth-20+'px'}">
                 <div class="OwO-logo" @click="pBodyStatus(item.id)">
@@ -93,95 +102,89 @@
                       <img :src="require('./img/face/'+oitem.url)" alt="">
                     </li>
                   </ul>
-
                 </div>
               </div>
-
               <div class="publish publish-btn">
                 <button class="btn" @click="doChidSend(item.id,item.commentUser.id,item.id)">发送</button>
                 <button @click="cancel(item.id)" class="btn btn-cancel">取消</button>
               </div>
             </div>
-
           </div>
         </div>
-
-      </div>
+      <!--子评论list-->
       <div class="children"  v-for="(ritem) in item.childrenList" :key="ritem.id">
         <div class="reply">
         </div>
+        <!--回复内容-->
         <div class="content" >
           <div class="comment-f">
-            <avatar :src="ritem.commentUser.avatar?ritem.commentUser.avatar:'' " :username="ritem.commentUser.nickName" :size="32"></avatar>
+            <avatar :src="ritem.commentUser.avatar?ritem.commentUser.avatar:'' " :username="ritem.commentUser.nickName" :size="34"></avatar>
           </div>
-
           <div class="comment-f">
             <div>
-              <div class="nickname author">
+              <div class="nickname author" :id="ritem.id">
                 {{ritem.commentUser.nickName}}
               </div>
-              <div v-if="ritem.commentUser.id===authorId" class="icon author">{{label}}</div>
+              <div  class="icon author" v-if="ritem.commentUser.label">{{ritem.commentUser.label}}</div>
               <div class="date">
                 {{ritem.createDate}}
+               </div>
               </div>
-
             </div>
-          </div>
-
           <div class="reply-content">
-            <div class="cc cc-to">
-              <a href="#">@{{ritem.targetUser.nickName}}</a>
+              <div class="cc cc-to">
+                <a :href="'#'+ritem.targetCommentid"  @click="doReply(ritem.targetCommentid)">@{{ritem.targetUser.nickName}}</a>
+              </div>
+              <div class="cc" v-html="analyzeEmoji(ritem.content)">{{analyzeEmoji(ritem.content)}}</div>
             </div>
-
-            <div class="cc" v-html="analyzeEmoji(ritem.content)">{{analyzeEmoji(ritem.content)}}</div>
-          </div>
-
           <div class="reply-content reply-fa">
-            <div class="reply-font" @click="doReply(ritem.id)">
-              <div>
-                <img src="./img/reply.png" class="icon-reply"><font class="icon-reply icon-hf">回复</font>
-              </div>
-
-            </div>
-
-            <div class="comment" style="width:100%"  v-if="replyMap[ritem.id]" :showAvatar="showAvatar">
-              <el-input
-                @focus="showButton(ritem.id)"
-                type="textarea"
-                :autosize="{ minRows: minRows, maxRows: maxRows}"
-                :placeholder=placeholder
-                v-model="textareaMap[ritem.id]">
-              </el-input>
-
-              <div v-if="buttonMap[ritem.id]" class="hbl-owo">
-                <div :class="pBodyMap[ritem.id]?'OwO':'OwO OwO-open'" class="emoj publish" :style="{width:emojiWidth-20+'px'}">
-                  <div class="OwO-logo" @click="pBodyStatus(ritem.id)">
-                    <span>Emoji表情</span>
-                  </div>
-                  <div class="OwO-body" :style="{width:emojiWidth+'px'}">
-                    <ul class="OwO-items OwO-items-show" :style="{width:emojiWidth+20+'px'}">
-                      <li class="OwO-item" v-for="(oitem,index) in OwOlist" :key="'oitem'+index"
-                          @click="choseEmoji(ritem.id,oitem.title)">
-                        <img :src="require('./img/face/'+oitem.url)" alt="">
-                      </li>
-                    </ul>
-
-                  </div>
+              <div class="reply-font" @click="doReply(ritem.id)">
+                <div class="iconsvg" @click="doReply(ritem.id)">
+                  <icon-svg name="message" class-name="icon-message"  />
+                  <span class="iconnum"></span>
                 </div>
-
-                <div class="publish publish-btn">
-                  <button class="btn" @click="doChidSend(ritem.id,ritem.commentUser.id,item.id)">发送</button>
-                  <button @click="cancel(ritem.id)" class="btn btn-cancel">取消</button>
+                <div class="iconsvg" @click="doReply(ritem.id)">
+                  <icon-svg name="like" class-name="icon-like"  />
+                  <span class="iconnum" >{{ritem.praiseCount}}</span>
+                </div>
+                <div class="iconsvg" @click="doReply(ritem.id)">
+                  <icon-svg name="notlike" class-name="icon-notlike"  />
+                  <span v-if="ritem.praiseCount < 0" class="iconnum">{{ritem.praiseCount}}</span>
                 </div>
               </div>
-
+              <div class="comment" style="width:100%"  v-if="replyMap[ritem.id]" :showAvatar="showAvatar">
+                <el-input
+                  @focus="showButton(ritem.id)"
+                  type="textarea"
+                  :autosize="{ minRows: minRows, maxRows: maxRows}"
+                  :placeholder=placeholder
+                  v-model="textareaMap[ritem.id]">
+                </el-input>
+                <div v-if="buttonMap[ritem.id]" class="hbl-owo">
+                  <div :class="pBodyMap[ritem.id]?'OwO':'OwO OwO-open'" class="emoj publish" :style="{width:emojiWidth-20+'px'}">
+                    <div class="OwO-logo" @click="pBodyStatus(ritem.id)">
+                      <span>Emoji表情</span>
+                    </div>
+                    <div class="OwO-body" :style="{width:emojiWidth+'px'}">
+                      <ul class="OwO-items OwO-items-show" :style="{width:emojiWidth+20+'px'}">
+                        <li class="OwO-item" v-for="(oitem,index) in OwOlist" :key="'oitem'+index"
+                            @click="choseEmoji(ritem.id,oitem.title)">
+                          <img :src="require('./img/face/'+oitem.url)" alt="">
+                        </li>
+                      </ul>
+                    </div>
+                  </div>
+                  <div class="publish publish-btn">
+                    <button class="btn" @click="doChidSend(ritem.id,ritem.commentUser.id,item.id)">发送</button>
+                    <button @click="cancel(ritem.id)" class="btn btn-cancel">取消</button>
+                  </div>
+                </div>
+              </div>
             </div>
-          </div>
         </div>
       </div>
-
+      </div>
     </div>
-
   </div>
 </template>
 
@@ -227,7 +230,6 @@ export default {
   data () {
     return {
       commentNum: 0,
-      label: '',
       commentList: [],
       commentinfo: {
         commentUserid: this.$cookie.get('userId'),
@@ -1216,14 +1218,31 @@ export default {
     color: #409eff;
   }
 
-  .icon-reply {
-    display: inline-block;
-    vertical-align: top;
-
+  .iconnum {
+    margin-right: 10px;
   }
 
-  .icon-hf {
-    margin-top: 2px;
+  .iconsvg {
+    vertical-align: top;
+    display: inline-block;
+    cursor: pointer;
+    overflow: hidden;
+    background: none !important;
+    color: #666;
+  }
+
+ .iconsvg:hover {
+   animation: a 5s infinite ease-in-out;
+   -webkit-animation: a 5s infinite ease-in-out;
+ }
+  .icon-notlike {
+    color: #40c9c6;
+  }
+  .icon-message {
+    color: #36a3f7;
+  }
+  .icon-like {
+    color: #f4516c;
   }
 
   .hbl-child {
