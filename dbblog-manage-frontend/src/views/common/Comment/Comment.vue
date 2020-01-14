@@ -3,7 +3,7 @@
   <div class="hbl-fa" :style="{width:commentWidth}">
     <div class="hbl-comm">
       <div class="comment-avatar" v-if="showAvatar">
-        <avatar :src="this.$cookie.get('userImg')" :username="this.$cookie.get('userName')" :size="40" ></avatar>
+        <avatar :src="this.$cookie.get('userImg')? this.$cookie.get('userImg') : ''" :username="this.$cookie.get('userName')? this.$cookie.get('userName') :'Error'" :size="40" ></avatar>
       </div>
       <!--顶部评论框-->
       <div class="comment" style="width:95%">
@@ -49,16 +49,16 @@
       <!--评论内容-->
       <div class="content" >
         <!--评论者头像-->
-        <div class="comment-f">
-          <avatar :src="item.commentUser.avatar?item.commentUser.avatar:''" :username="item.commentUser.nickName" :size="37" ></avatar>
-        </div>
-        <!--评论信息-->
-        <div class="comment-f">
-          <div>
+        <div class="comment-head">
+          <div class="comment-f">
+            <avatar :src="item.commentUser.avatar?item.commentUser.avatar:''" :username="item.commentUser.nickName" :size="37" ></avatar>
+          </div>
+          <!--评论信息-->
+          <div class="comment-f">
             <div class="nickname author" :id="item.id">
               {{item.commentUser.nickName}}
             </div>
-            <div  class="icon author">{{item.commentUser.label}}</div>
+            <div  class="icon author" v-if="item.commentUser.label">{{item.commentUser.label}}</div>
             <div class="date">
               {{item.createDate}}
             </div>
@@ -67,17 +67,16 @@
         <!--评论内容-->
         <div class="reply-content" v-html="analyzeEmoji(item.content)">{{analyzeEmoji(item.content)}}</div>
         <!--回复组件-->
-        <div class="reply-content reply-fa">
+        <div class="reply-content reply-fa comment-foot">
           <div class="reply-font" >
             <div class="iconsvg" @click="doReply(item.id)">
               <icon-svg name="message" class-name="icon-message"  />
-              <span class="iconnum"></span>
             </div>
-            <div class="iconsvg" @click="doReply(item.id)">
+            <div class="iconsvg" @click="doLike(item.id)">
               <icon-svg name="like" class-name="icon-like"  />
-              <span class="iconnum" >{{item.praiseCount}}</span>
+              <span class="iconnum" v-if="item.praiseCount > 0" >{{item.praiseCount}}</span>
             </div>
-            <div class="iconsvg" @click="doReply(item.id)">
+            <div class="iconsvg" @click="doNotLike(item.id)">
               <icon-svg name="notlike" class-name="icon-notlike"  />
               <span v-if="item.praiseCount < 0" class="iconnum">{{item.praiseCount}}</span>
             </div>
@@ -111,43 +110,42 @@
             </div>
           </div>
         </div>
-      <!--子评论list-->
-      <div class="children"  v-for="(ritem) in item.childrenList" :key="ritem.id">
-        <div class="reply">
-        </div>
-        <!--回复内容-->
-        <div class="content" >
-          <div class="comment-f">
-            <avatar :src="ritem.commentUser.avatar?ritem.commentUser.avatar:'' " :username="ritem.commentUser.nickName" :size="34"></avatar>
+        <!--子评论list-->
+        <div class="children"  v-for="(ritem) in item.childrenList" :key="ritem.id">
+          <div class="reply">
           </div>
-          <div class="comment-f">
-            <div>
-              <div class="nickname author" :id="ritem.id">
-                {{ritem.commentUser.nickName}}
+          <!--回复内容-->
+          <div class="content" >
+            <div class="comment-head">
+              <div class="comment-f">
+                <avatar :src="ritem.commentUser.avatar?ritem.commentUser.avatar:'' " :username="ritem.commentUser.nickName" :size="34"></avatar>
               </div>
-              <div  class="icon author" v-if="ritem.commentUser.label">{{ritem.commentUser.label}}</div>
-              <div class="date">
-                {{ritem.createDate}}
-               </div>
+              <div class="comment-f">
+                <div class="nickname author" :id="ritem.id">
+                  {{ritem.commentUser.nickName}}
+                </div>
+                <div  class="icon author" v-if="ritem.commentUser.label">{{ritem.commentUser.label}}</div>
+                <div class="date">
+                  {{ritem.createDate}}
+                 </div>
               </div>
             </div>
-          <div class="reply-content">
+            <div class="reply-content">
               <div class="cc cc-to">
                 <a :href="'#'+ritem.targetCommentid"  @click="doReply(ritem.targetCommentid)">@{{ritem.targetUser.nickName}}</a>
               </div>
               <div class="cc" v-html="analyzeEmoji(ritem.content)">{{analyzeEmoji(ritem.content)}}</div>
-            </div>
-          <div class="reply-content reply-fa">
+              </div>
+            <div class="reply-content reply-fa comment-foot">
               <div class="reply-font" @click="doReply(ritem.id)">
                 <div class="iconsvg" @click="doReply(ritem.id)">
                   <icon-svg name="message" class-name="icon-message"  />
-                  <span class="iconnum"></span>
                 </div>
-                <div class="iconsvg" @click="doReply(ritem.id)">
+                <div class="iconsvg" @click="doLike(ritem.id)">
                   <icon-svg name="like" class-name="icon-like"  />
-                  <span class="iconnum" >{{ritem.praiseCount}}</span>
+                  <span class="iconnum"  v-if="ritem.praiseCount > 0" >{{ritem.praiseCount}}</span>
                 </div>
-                <div class="iconsvg" @click="doReply(ritem.id)">
+                <div class="iconsvg" @click="doNotLike(ritem.id)">
                   <icon-svg name="notlike" class-name="icon-notlike"  />
                   <span v-if="ritem.praiseCount < 0" class="iconnum">{{ritem.praiseCount}}</span>
                 </div>
@@ -175,14 +173,14 @@
                     </div>
                   </div>
                   <div class="publish publish-btn">
-                    <button class="btn" @click="doChidSend(ritem.id,ritem.commentUser.id,item.id)">发送</button>
+                    <button class="btn" @click="doChidSend(ritem.id,ritem.commentUser.id,item.topCommentid)">发送</button>
                     <button @click="cancel(ritem.id)" class="btn btn-cancel">取消</button>
                   </div>
                 </div>
               </div>
             </div>
+          </div>
         </div>
-      </div>
       </div>
     </div>
   </div>
@@ -195,7 +193,7 @@ export default {
   props: {
     emojiWidth: {
       type: Number,
-      default: 480
+      default: 960
     },
     showAvatar: {
       type: Boolean,
@@ -341,13 +339,23 @@ export default {
       // this.showFlag = false;
     },
     doSend () {
-      // console.log("====="+this.textarea);
+      console.log('=====' + this.textareaMap[0])
       this.$emit('doSend', this.textareaMap[0])
       this.$set(this.textareaMap, 0, '')
     },
-    doChidSend (index, commentUserId, pid) {
-      this.$emit('doChidSend', this.textareaMap[index], commentUserId, pid)
-      this.$set(this.textareaMap, index, '')
+    doChidSend (commentid, commentUserId, topcommentid) {
+      this.$emit('doChidSend', this.textareaMap[commentid], commentUserId, topcommentid)
+
+      console.log('索引:' + commentid + '內容' + this.textareaMap[commentid] + 'commentUserId:' + commentUserId + 'pid:' + topcommentid)
+      // this.$set(this.textareaMap, commentid, '')
+    },
+    doLike (commentid) {
+      console.log('索引:' + commentid)
+      // this.$set(this.textareaMap, commentid, '')
+    },
+    doNotLike (commentid) {
+      console.log('索引:' + commentid)
+      // this.$set(this.textareaMap, commentid, '')
     },
 
     // 选择表情包
@@ -1151,10 +1159,23 @@ export default {
   }
 
   .content {
+    /*margin-top: 20px;
+    margin-bottom: 20px;*/
+  }
+  .comment-head {
     margin-top: 20px;
-    margin-bottom: 20px;
+  }
+  .children .comment-head {
+    margin-top: 10px;
   }
 
+  .comment-foot {
+    margin-bottom: 10px;
+  }
+
+  .children .comment-foot {
+    margin-bottom: 6px;
+  }
   .comment-f {
     display: inline-block;
     vertical-align: top;
@@ -1219,7 +1240,7 @@ export default {
   }
 
   .iconnum {
-    margin-right: 10px;
+    padding-left: 2px;
   }
 
   .iconsvg {
@@ -1227,7 +1248,7 @@ export default {
     display: inline-block;
     cursor: pointer;
     overflow: hidden;
-    background: none !important;
+    margin-right: 10px;
     color: #666;
   }
 
