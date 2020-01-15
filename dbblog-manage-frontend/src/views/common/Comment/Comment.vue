@@ -7,32 +7,34 @@
       </div>
       <!--顶部评论框-->
       <div class="comment" style="width:95%">
-        <el-input
-          @focus="showButton(0)"
-          type="textarea"
-          :autosize="{ minRows: minRows, maxRows: maxRows}"
-          :placeholder=placeholder
-          v-model="textareaMap[0]">
-        </el-input>
-        <!--表情框-->
-        <div v-if="buttonMap[0]" class="hbl-owo">
-          <div :class="pBodyMap[0]?'OwO':'OwO OwO-open'" class="emoj publish" :style="{width:emojiWidth+'px'}">
-            <div class="OwO-logo" @click="pBodyStatus(0)">
-              <span>Emoji表情</span>
+        <div>
+          <el-input
+            @focus="showButton(-1)"
+            type="textarea"
+            :autosize="{ minRows: minRows, maxRows: maxRows}"
+            :placeholder=placeholder
+            v-model="textareaMap">
+          </el-input>
+          <!--表情框-->
+          <div class="hbl-owo">
+            <div :class="pEmojiStatus&&(pBodyMap==-1)?'OwO OwO-open':'OwO'" class="emoj publish" :style="{width:emojiWidth+'px'}">
+              <div class="OwO-logo" @click="pBodyStatus(-1)">
+                <span>Emoji表情</span>
+              </div>
+              <div class="OwO-body" :style="{width:emojiWidth+'px'}">
+                <ul class="OwO-items OwO-items-show" :style="{width:emojiWidth+20+'px'}">
+                  <li class="OwO-item" v-for="(oitem,index) in OwOlist" :key="'oitem'+index"
+                      @click="choseMainEmoji(0,oitem.title)">
+                    <img :src="require('./img/face/'+oitem.url)" alt="">
+                  </li>
+                </ul>
+              </div>
             </div>
-            <div class="OwO-body" :style="{width:emojiWidth+'px'}">
-              <ul class="OwO-items OwO-items-show" :style="{width:emojiWidth+20+'px'}">
-                <li class="OwO-item" v-for="(oitem,index) in OwOlist" :key="'oitem'+index"
-                    @click="choseEmoji(0,oitem.title)">
-                  <img :src="require('./img/face/'+oitem.url)" alt="">
-                </li>
-              </ul>
+            <!--按钮组-->
+            <div class="publish publish-btn">
+              <button class="btn" @click="doSend()">发送</button>
+              <button @click="cancel(-1)" class="btn btn-cancel">取消</button>
             </div>
-          </div>
-          <!--按钮组-->
-          <div class="publish publish-btn">
-            <button class="btn" @click="doSend()">发送</button>
-            <button @click="cancel(0)" class="btn btn-cancel">取消</button>
           </div>
         </div>
       </div>
@@ -81,23 +83,23 @@
               <span v-if="item.praiseCount < 0" class="iconnum">{{item.praiseCount}}</span>
             </div>
           </div>
-          <div class="comment"  style="width:100%" v-if="replyMap[item.id]" :showAvatar="showAvatar">
+          <div class="comment"  style="width:100%" v-show="pBodyMap==item.id"  :showAvatar="showAvatar">
             <el-input
               @focus="showButton(item.id)"
               type="textarea"
               :autosize="{ minRows: minRows, maxRows: maxRows}"
               :placeholder=placeholder
-              v-model="textareaMap[item.id]">
+              v-model="childtextareaMap">
             </el-input>
-            <div v-if="buttonMap[item.id]" class="hbl-owo">
-              <div :class="pBodyMap[item.id]?'OwO':'OwO OwO-open'" class="emoj publish" :style="{width:emojiWidth-20+'px'}">
+            <div  class="hbl-owo">
+              <div :class="pEmojiStatus&&(pBodyMap==item.id)?'OwO OwO-open':'OwO'" class="emoj publish" :style="{width:emojiWidth-20+'px'}">
                 <div class="OwO-logo" @click="pBodyStatus(item.id)">
                   <span>Emoji表情</span>
                 </div>
                 <div class="OwO-body" :style="{width:emojiWidth+'px'}">
                   <ul class="OwO-items OwO-items-show" :style="{width:emojiWidth+20+'px'}">
                     <li class="OwO-item" v-for="(oitem,index) in OwOlist" :key="'oitem'+index"
-                        @click="choseEmoji(item.id,oitem.title)">
+                        @click="choseChildEmoji(item.id,oitem.title)">
                       <img :src="require('./img/face/'+oitem.url)" alt="">
                     </li>
                   </ul>
@@ -150,23 +152,23 @@
                   <span v-if="ritem.praiseCount < 0" class="iconnum">{{ritem.praiseCount}}</span>
                 </div>
               </div>
-              <div class="comment" style="width:100%"  v-if="replyMap[ritem.id]" :showAvatar="showAvatar">
+              <div class="comment" style="width:100%" v-show="pBodyMap==ritem.id"  :showAvatar="showAvatar">
                 <el-input
                   @focus="showButton(ritem.id)"
                   type="textarea"
                   :autosize="{ minRows: minRows, maxRows: maxRows}"
                   :placeholder=placeholder
-                  v-model="textareaMap[ritem.id]">
+                  v-model="childtextareaMap">
                 </el-input>
-                <div v-if="buttonMap[ritem.id]" class="hbl-owo">
-                  <div :class="pBodyMap[ritem.id]?'OwO':'OwO OwO-open'" class="emoj publish" :style="{width:emojiWidth-20+'px'}">
+                <div  class="hbl-owo">
+                  <div :class="pEmojiStatus&&(pBodyMap==ritem.id)?'OwO OwO-open':'OwO'" class="emoj publish" :style="{width:emojiWidth-20+'px'}">
                     <div class="OwO-logo" @click="pBodyStatus(ritem.id)">
                       <span>Emoji表情</span>
                     </div>
                     <div class="OwO-body" :style="{width:emojiWidth+'px'}">
                       <ul class="OwO-items OwO-items-show" :style="{width:emojiWidth+20+'px'}">
                         <li class="OwO-item" v-for="(oitem,index) in OwOlist" :key="'oitem'+index"
-                            @click="choseEmoji(ritem.id,oitem.title)">
+                            @click="choseChildEmoji(ritem.id,oitem.title)">
                           <img :src="require('./img/face/'+oitem.url)" alt="">
                         </li>
                       </ul>
@@ -223,7 +225,6 @@ export default {
       type: String,
       default: '100%'
     }
-
   },
   data () {
     return {
@@ -240,10 +241,12 @@ export default {
         targetUserimg: '',
         isreply: ''
       },
-      replyMap: [],
-      buttonMap: [],
-      pBodyMap: [],
-      textareaMap: [''],
+      replyMap: -1,
+      pBodyMap: -1,
+      buttonMap: -1,
+      pEmojiStatus: false,
+      textareaMap: '',
+      childtextareaMap: '',
       OwOlist: [// 表情包和表情路径
         {'title': '微笑', 'url': 'weixiao.gif'},
         {'title': '嘻嘻', 'url': 'xixi.gif'},
@@ -326,46 +329,49 @@ export default {
   methods: { // 事件处理器
 
     showButton (index) {
-      // this.showFlag = true;
-      console.log(index + 'index')
-      this.$set(this.buttonMap, index, true)
+      console.log('index:' + index)
+      if (this.pBodyMap === index) {
+        this.pBodyStatus(index)
+      } else {
+        this.pBodyMap = index
+        this.pEmojiStatus = false
+      }
     },
     cancel (index) {
-      this.$set(this.buttonMap, index, false)
-      if (index !== 0) {
-        this.$set(this.replyMap, index, false)
-      }
-      console.log(index + 'index')
-      // this.showFlag = false;
+      this.pEmojiStatus = false
+      this.pBodyMap = -1
+      this.textareaMap = ''
+      this.childtextareaMap = ''
     },
     doSend () {
-      console.log('=====' + this.textareaMap[0])
-      this.$emit('doSend', this.textareaMap[0])
-      this.$set(this.textareaMap, 0, '')
+      console.log('主回复:' + this.textareaMap)
+      this.$emit('doSend', this.textareaMap)
+      this.cancle(-1)
     },
     doChidSend (commentid, commentUserId, topcommentid) {
-      this.$emit('doChidSend', this.textareaMap[commentid], commentUserId, topcommentid)
-
-      console.log('索引:' + commentid + '內容' + this.textareaMap[commentid] + 'commentUserId:' + commentUserId + 'pid:' + topcommentid)
-      // this.$set(this.textareaMap, commentid, '')
+      this.$emit('doChidSend', this.childtextareaMap, commentUserId, topcommentid)
+      console.log('索引:' + commentid + '內容' + this.childtextareaMap + 'commentUserId:' + commentUserId + 'pid:' + topcommentid)
     },
     doLike (commentid) {
       console.log('索引:' + commentid)
-      // this.$set(this.textareaMap, commentid, '')
     },
     doNotLike (commentid) {
       console.log('索引:' + commentid)
-      // this.$set(this.textareaMap, commentid, '')
     },
 
     // 选择表情包
-    choseEmoji: function (index, inner) {
-      var con = ''
-      if (!this.textareaMap[index]) {
-        this.$set(this.textareaMap, index, '')
+    choseMainEmoji: function (index, inner) {
+      if (!this.textareaMap) {
+        this.textareaMap = ''
       }
-      con = this.textareaMap[index] += '[' + inner + ']'
-      this.$set(this.textareaMap, index, con)
+      this.textareaMap += '[' + inner + ']'
+    },
+    // 选择表情包
+    choseChildEmoji: function (index, inner) {
+      if (!this.childtextareaMap) {
+        this.childtextareaMap = ''
+      }
+      this.childtextareaMap += '[' + inner + ']'
     },
     analyzeEmoji: function (cont) { // 编译表情替换成图片展示出来
       var pattern1 = /\[[\u4e00-\u9fa5]+\]/g
@@ -389,15 +395,20 @@ export default {
       return str
     },
     doReply (index) {
-      this.$set(this.replyMap, index, true)
-      console.log(this.replyMap[index])
+      console.log('doReply:' + index)
+      this.pBodyMap = index
+      console.log('pBodyMap:' + index)
+      this.pEmojiStatus = false
     },
 
+    // 表情包显影
     pBodyStatus (index) {
-      this.$set(this.pBodyMap, index, !this.pBodyMap[index])
+      this.pBodyMap = index
+      this.pEmojiStatus = !this.pEmojiStatus
     },
 
     init () {
+      this.cancel(-1)
       // 获取笔记分类
       this.$http({
         url: this.$http.adornUrl('/comment/arcticComment/' + this.articleid),
@@ -1265,7 +1276,12 @@ export default {
   .icon-like {
     color: #f4516c;
   }
-
+  .show {
+    display: block;
+  }
+  .hide {
+    display: none;
+  }
   .hbl-child {
     padding: 20px;
   }
